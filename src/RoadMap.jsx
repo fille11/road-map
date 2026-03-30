@@ -25,6 +25,7 @@ export default function RoadMap() {
       const { data, error } = await supabase
         .from("roads_geojson")
         .select("geometry");
+        .limit(10000);
 
       console.log("DATA:", data);
 
