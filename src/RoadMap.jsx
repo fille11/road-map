@@ -37,10 +37,7 @@ export default function RoadMap() {
         type: "FeatureCollection",
         features: data.map((row) => ({
           type: "Feature",
-          geometry:
-            typeof row.geom === "string"
-              ? JSON.parse(row.geom)
-              : row.geom,
+          geometry: row.geometry,
         })),
       };
 
