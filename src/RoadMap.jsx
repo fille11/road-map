@@ -3,8 +3,8 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { createClient } from "@supabase/supabase-js";
 
-const SUPABASE_URL = "https://xonbkazvflffjbfqdfm.supabase.co";
-const SUPABASE_KEY = "sb_publishable_4xnTeseCV-iBuAZfsXq7aQ_1IwbIggT";
+const SUPABASE_URL = "https://xonbkazvfxllffjbqfdm.supabase.co";
+const SUPABASE_KEY = "sb_publishable_7tC9UoaV3aW3NezJeTW3Hw_IqqXI82y";
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
