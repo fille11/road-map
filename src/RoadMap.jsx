@@ -24,10 +24,10 @@ export default function RoadMap() {
     async function fetchRoads() {
       const { data, error } = await supabase
         .from("roads_geojson")
-        .select("geometry");
-         .range(0, 9999); 
+        .select("*") // 🔥 hämta ALL data
+        .range(0, 9999); // 🔥 fixad chaining
 
-       console.log("ANTAL:", data?.length);
+      console.log("ANTAL:", data?.length);
 
       if (error) {
         console.error("Supabase error:", error);
@@ -38,7 +38,11 @@ export default function RoadMap() {
         type: "FeatureCollection",
         features: data.map((row) => ({
           type: "Feature",
-          geometry: row.geometry,
+          geometry:
+            typeof row.geometry === "string"
+              ? JSON.parse(row.geometry) // 🔥 viktigt!
+              : row.geometry,
+          properties: row, // 🔥 här kopplas all data
         })),
       };
 
@@ -46,6 +50,11 @@ export default function RoadMap() {
         style: {
           color: "red",
           weight: 4,
+        },
+        onEachFeature: (feature, layer) => {
+          layer.on("click", () => {
+            console.log("PROPERTIES:", feature.properties); // 🔥 test
+          });
         },
       }).addTo(map);
     }
