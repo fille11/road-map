@@ -23,8 +23,8 @@ export default function RoadMap() {
 
     async function fetchRoads() {
       const { data, error } = await supabase
-        .from("roads_gatutyp")
-        .select("geom"); // ✅ FIX
+        .from("roads_geojson")
+        .select("geometry");
 
       console.log("DATA:", data);
 
