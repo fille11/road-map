@@ -27,7 +27,7 @@ export default function RoadMap() {
         .select("geometry");
          .range(0, 9999); 
 
-      console.log("DATA:", data);
+       console.log("ANTAL:", data?.length);
 
       if (error) {
         console.error("Supabase error:", error);
