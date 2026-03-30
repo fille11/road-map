@@ -24,8 +24,8 @@ export default function RoadMap() {
     async function fetchRoads() {
       const { data, error } = await supabase
         .from("roads_geojson")
-        .select("*") // 🔥 hämta ALL data
-        .range(0, 9999); // 🔥 fixad chaining
+        .select("*")
+        .range(0, 30000); // 🔥 höjt till 30k
 
       console.log("ANTAL:", data?.length);
 
@@ -36,14 +36,21 @@ export default function RoadMap() {
 
       const geojson = {
         type: "FeatureCollection",
-        features: data.map((row) => ({
-          type: "Feature",
-          geometry:
+        features: data.map((row) => {
+          const geometry =
             typeof row.geometry === "string"
-              ? JSON.parse(row.geometry) // 🔥 viktigt!
-              : row.geometry,
-          properties: row, // 🔥 här kopplas all data
-        })),
+              ? JSON.parse(row.geometry)
+              : row.geometry;
+
+          return {
+            type: "Feature",
+            geometry,
+            properties: {
+              ...row, // 🔥 all data
+              geometry: undefined, // 🔥 tar bort dubbel geometry
+            },
+          };
+        }),
       };
 
       L.geoJSON(geojson, {
@@ -53,7 +60,7 @@ export default function RoadMap() {
         },
         onEachFeature: (feature, layer) => {
           layer.on("click", () => {
-            console.log("PROPERTIES:", feature.properties); // 🔥 test
+            console.log("PROPERTIES:", feature.properties);
           });
         },
       }).addTo(map);
