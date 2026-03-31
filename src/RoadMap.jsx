@@ -95,7 +95,7 @@ export default function RoadMap() {
 
                <div style="margin-top: 8px;">
                  <a 
-                   href="https://www.allabolag.se/${org}" 
+                   href="https://https://www.allabolag.se/bransch-s%C3%B6k?q=${org}" 
                    target="_blank"
                    style="color: blue; text-decoration: underline;"
                  >
