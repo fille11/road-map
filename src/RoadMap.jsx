@@ -62,13 +62,34 @@ export default function RoadMap() {
         onEachFeature: (feature, layer) => {
           const props = feature.properties;
 
-          // 🔥 popup content
-          const popupContent = `
-            <div style="font-family: Arial; font-size: 14px;">
-              <b>Vägtyp:</b> ${props.road_type || "Okänd"}<br/>
-              <b>ID:</b> ${props.id || "N/A"}
-            </div>
-          `;
+          // 🔥 popup content         
+           const popupContent = `
+             <div style="
+               font-family: Arial;
+               font-size: 14px;
+               min-width: 180px;
+             ">
+               
+               <div style="
+                 font-weight: bold;
+                 font-size: 16px;
+                 margin-bottom: 6px;
+                 border-bottom: 1px solid #ddd;
+                 padding-bottom: 4px;
+               ">
+                 🛣️ Väginfo
+               </div>
+
+               <div style="margin-bottom: 4px;">
+                 <b>Typ:</b> ${props.road_type || "Okänd"}
+               </div>
+
+               <div style="margin-bottom: 4px;">
+                 <b>ID:</b> ${props.id || "N/A"}
+               </div>
+
+             </div>
+           `;
 
           layer.bindPopup(popupContent);
         },
