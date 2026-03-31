@@ -78,7 +78,7 @@ export default function RoadMap() {
                  border-bottom: 1px solid #ddd;
                  padding-bottom: 4px;
                ">
-                 🛣️ Väginfo
+                 Väginformation
                </div>
 
                <div style="margin-bottom: 4px;">
@@ -103,7 +103,7 @@ export default function RoadMap() {
                    target="_blank"
                    style="color: blue; text-decoration: underline;"
                  >
-                   🔗 Se företag
+                   Se mer information
                  </a>
                </div>
 
