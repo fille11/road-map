@@ -93,6 +93,10 @@ export default function RoadMap() {
                </div>
 
                <div style="margin-bottom: 4px;">
+                 <b>Org.nr:</b> ${props.org_number || "N/A"}
+               </div>
+
+               <div style="margin-bottom: 4px;">
                  <b>ID:</b> ${props.id || "N/A"}
                </div>
 
