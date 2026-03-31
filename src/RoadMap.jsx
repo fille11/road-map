@@ -11,12 +11,14 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 export default function RoadMap() {
   const mapRef = useRef(null);
-  const layerRef = useRef(null); // 🔥 håller koll på lager
+  const layerRef = useRef(null);
 
   const [filters, setFilters] = useState({
     owner_type: [],
     road_type: [],
   });
+
+  const [count, setCount] = useState(0); // 🔥 antal vägar
 
   useEffect(() => {
     if (!mapRef.current) {
@@ -40,39 +42,42 @@ export default function RoadMap() {
         return;
       }
 
+      // 🔥 FILTRERA
+      const filtered = data.filter((row) => {
+        const ownerMatch =
+          filters.owner_type.length === 0 ||
+          filters.owner_type.includes(
+            row.owner_type?.toLowerCase()
+          );
+
+        const roadMatch =
+          filters.road_type.length === 0 ||
+          filters.road_type.some((t) =>
+            row.road_type?.toLowerCase().includes(t.toLowerCase())
+          );
+
+        return ownerMatch && roadMatch;
+      });
+
+      setCount(filtered.length); // 🔥 sätt antal
+
       const geojson = {
         type: "FeatureCollection",
-        features: data
-          .filter((row) => {
-            const ownerMatch =
-              filters.owner_type.length === 0 ||
-              filters.owner_type.includes(
-                row.owner_type?.toLowerCase()
-              );
+        features: filtered.map((row) => {
+          const geometry =
+            typeof row.geometry === "string"
+              ? JSON.parse(row.geometry)
+              : row.geometry;
 
-            const roadMatch =
-              filters.road_type.length === 0 ||
-              filters.road_type.some((t) =>
-                row.road_type?.toLowerCase().includes(t.toLowerCase())
-              );
-
-            return ownerMatch && roadMatch;
-          })
-          .map((row) => {
-            const geometry =
-              typeof row.geometry === "string"
-                ? JSON.parse(row.geometry)
-                : row.geometry;
-
-            return {
-              type: "Feature",
-              geometry,
-              properties: {
-                ...row,
-                geometry: undefined,
-              },
-            };
-          }),
+          return {
+            type: "Feature",
+            geometry,
+            properties: {
+              ...row,
+              geometry: undefined,
+            },
+          };
+        }),
       };
 
       // 🔥 TA BORT GAMLA LAGER
@@ -144,11 +149,27 @@ export default function RoadMap() {
     }
 
     fetchRoads();
-  }, [filters]); // 🔥 VIKTIGT
+  }, [filters]);
 
   return (
     <>
       <Filters filters={filters} setFilters={setFilters} />
+
+      {/* 🔥 ANTAL VÄGAR */}
+      <div style={{
+        position: "absolute",
+        top: 10,
+        right: 10,
+        background: "white",
+        padding: "8px 12px",
+        borderRadius: "8px",
+        zIndex: 1000,
+        boxShadow: "0 2px 10px rgba(0,0,0,0.2)",
+        fontFamily: "Arial"
+      }}>
+        {count} vägar visas
+      </div>
+
       <div id="map" style={{ height: "100vh", width: "100%" }} />
     </>
   );
