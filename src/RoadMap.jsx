@@ -90,12 +90,16 @@ export default function RoadMap() {
                </div>
 
                <div style="margin-bottom: 4px;">
+                 <b>Ägartyp:</b> ${props.owner_type || "Okänd"}
+               </div>
+
+               <div style="margin-bottom: 4px;">
                  <b>Org.nr:</b> ${org || "N/A"}
                </div>
 
                <div style="margin-top: 8px;">
                  <a 
-                   href="https://https://www.allabolag.se/bransch-s%C3%B6k?q=${org}" 
+                   href="https://www.allabolag.se/bransch-s%C3%B6k?q=${org}" 
                    target="_blank"
                    style="color: blue; text-decoration: underline;"
                  >
