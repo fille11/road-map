@@ -54,10 +54,31 @@ export default function RoadMap() {
       };
 
       L.geoJSON(geojson, {
-        style: {
-          color: "red",
-          weight: 4,
-        },
+        style: (feature) => {
+  const type = feature.properties.road_type;
+
+  if (!type) return { color: "gray", weight: 2 };
+
+  // 🔥 Färglogik
+  if (type.includes("Motorväg")) {
+    return { color: "red", weight: 5 };
+  }
+
+  if (type.includes("Huvudväg")) {
+    return { color: "orange", weight: 4 };
+  }
+
+  if (type.includes("Lokalgata")) {
+    return { color: "blue", weight: 3 };
+  }
+
+  if (type.includes("Övergripande")) {
+    return { color: "purple", weight: 4 };
+  }
+
+  // fallback
+  return { color: "gray", weight: 2 };
+}
         onEachFeature: (feature, layer) => {
           layer.on("click", () => {
             console.log("PROPERTIES:", feature.properties);
