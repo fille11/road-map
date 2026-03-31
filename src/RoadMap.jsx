@@ -61,7 +61,7 @@ export default function RoadMap() {
 
   // 🔥 Färglogik
   if (type.includes("Motorväg")) {
-    return { color: "red", weight: 5 };
+    return { color: "green", weight: 5 };
   }
 
   if (type.includes("Huvudväg")) {
