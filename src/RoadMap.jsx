@@ -85,13 +85,21 @@ export default function RoadMap() {
                </div>
 
                <div style="margin-bottom: 4px;">
+                 <b>Ägare:</b> ${props.owner || "Okänd"}
+               </div>
+
+               <div style="margin-bottom: 4px;">
+                 <b>Ägartyp:</b> ${props.owner_type || "Okänd"}
+               </div>
+
+               <div style="margin-bottom: 4px;">
                  <b>ID:</b> ${props.id || "N/A"}
                </div>
 
              </div>
            `;
 
-          layer.bindPopup(popupContent);
+           layer.bindPopup(popupContent);
         },
       }).addTo(map);
     }
