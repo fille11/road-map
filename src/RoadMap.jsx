@@ -2,6 +2,8 @@ import { useEffect, useRef } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { createClient } from "@supabase/supabase-js";
+import { useState } from "react";
+import Filters from "./Filters";
 
 const SUPABASE_URL = "https://xonbkazvfxllffjbqfdm.supabase.co";
 const SUPABASE_KEY = "sb_publishable_7tC9UoaV3aW3NezJeTW3Hw_IqqXI82y";
@@ -34,9 +36,29 @@ export default function RoadMap() {
         return;
       }
 
+      const [filters, setFilters] = useState({
+          owner_type: [],
+          road_type: [],
+      });
+      
       const geojson = {
         type: "FeatureCollection",
-        features: data.map((row) => {
+                  features: data
+            .filter((row) => {
+              const ownerMatch =
+                filters.owner_type.length === 0 ||
+                filters.owner_type.includes(row.owner_type?.toLowerCase());
+
+              const roadMatch =
+                filters.road_type.length === 0 ||
+                filters.road_type.some((t) =>
+                  row.road_type?.toLowerCase().includes(t.toLowerCase())
+                );
+
+              return ownerMatch && roadMatch;
+            })
+            .map((row) => {
+              
           const geometry =
             typeof row.geometry === "string"
               ? JSON.parse(row.geometry)
@@ -123,5 +145,10 @@ export default function RoadMap() {
     };
   }, []);
 
-  return <div id="map" style={{ height: "100vh", width: "100%" }} />;
+ return (
+   <>
+     <Filters filters={filters} setFilters={setFilters} />
+     <div id="map" style={{ height: "100vh", width: "100%" }} />
+   </>
+ );
 }
