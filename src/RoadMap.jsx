@@ -25,7 +25,7 @@ export default function RoadMap() {
       const { data, error } = await supabase
         .from("roads_geojson")
         .select("*")
-        .range(0, 30000); // 🔥 höjt till 30k
+        .range(0, 30000);
 
       console.log("ANTAL:", data?.length);
 
@@ -46,46 +46,34 @@ export default function RoadMap() {
             type: "Feature",
             geometry,
             properties: {
-              ...row, // 🔥 all data
-              geometry: undefined, // 🔥 tar bort dubbel geometry
+              ...row,
+              geometry: undefined,
             },
           };
         }),
       };
 
       L.geoJSON(geojson, {
-  style: (feature) => {
-    const type = feature.properties?.road_type?.toLowerCase();
+        style: {
+          color: "red",
+          weight: 4,
+        },
 
-    if (!type) {
-      return { color: "gray", weight: 2 };
+        onEachFeature: (feature, layer) => {
+          const props = feature.properties;
+
+          // 🔥 popup content
+          const popupContent = `
+            <div style="font-family: Arial; font-size: 14px;">
+              <b>Vägtyp:</b> ${props.road_type || "Okänd"}<br/>
+              <b>ID:</b> ${props.id || "N/A"}
+            </div>
+          `;
+
+          layer.bindPopup(popupContent);
+        },
+      }).addTo(map);
     }
-
-    if (type.includes("motorväg")) {
-      return { color: "red", weight: 6 };
-    }
-
-    if (type.includes("huvud")) {
-      return { color: "orange", weight: 5 };
-    }
-
-    if (type.includes("lokalgata")) {
-      return { color: "blue", weight: 3 };
-    }
-
-    if (type.includes("övergripande")) {
-      return { color: "purple", weight: 4 };
-    }
-
-    return { color: "black", weight: 2 };
-  }, // 🔥 DENNA SAKNADES
-
-  onEachFeature: (feature, layer) => {
-    layer.on("click", () => {
-      console.log("PROPERTIES:", feature.properties);
-    });
-  },
-}).addTo(map);
 
     fetchRoads();
 
