@@ -54,38 +54,38 @@ export default function RoadMap() {
       };
 
       L.geoJSON(geojson, {
-        style: (feature) => {
-  const type = feature.properties?.road_type?.toLowerCase();
+  style: (feature) => {
+    const type = feature.properties?.road_type?.toLowerCase();
 
-  if (!type) {
-    return { color: "gray", weight: 2 };
-  }
-
-  if (type.includes("motorväg")) {
-    return { color: "red", weight: 6 };
-  }
-
-  if (type.includes("huvud")) {
-    return { color: "orange", weight: 5 };
-  }
-
-  if (type.includes("lokalgata")) {
-    return { color: "blue", weight: 3 };
-  }
-
-  if (type.includes("övergripande")) {
-    return { color: "purple", weight: 4 };
-  }
-
-  return { color: "black", weight: 2 };
-}
-        onEachFeature: (feature, layer) => {
-          layer.on("click", () => {
-            console.log("PROPERTIES:", feature.properties);
-          });
-        },
-      }).addTo(map);
+    if (!type) {
+      return { color: "gray", weight: 2 };
     }
+
+    if (type.includes("motorväg")) {
+      return { color: "red", weight: 6 };
+    }
+
+    if (type.includes("huvud")) {
+      return { color: "orange", weight: 5 };
+    }
+
+    if (type.includes("lokalgata")) {
+      return { color: "blue", weight: 3 };
+    }
+
+    if (type.includes("övergripande")) {
+      return { color: "purple", weight: 4 };
+    }
+
+    return { color: "black", weight: 2 };
+  }, // 🔥 DENNA SAKNADES
+
+  onEachFeature: (feature, layer) => {
+    layer.on("click", () => {
+      console.log("PROPERTIES:", feature.properties);
+    });
+  },
+}).addTo(map);
 
     fetchRoads();
 
