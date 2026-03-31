@@ -62,7 +62,8 @@ export default function RoadMap() {
         onEachFeature: (feature, layer) => {
           const props = feature.properties;
 
-          // 🔥 popup content         
+           const org = (props.org_number || "").slice(0, 11);
+
            const popupContent = `
              <div style="
                font-family: Arial;
@@ -89,15 +90,17 @@ export default function RoadMap() {
                </div>
 
                <div style="margin-bottom: 4px;">
-                 <b>Ägartyp:</b> ${props.owner_type || "Okänd"}
+                 <b>Org.nr:</b> ${org || "N/A"}
                </div>
 
-               <div style="margin-bottom: 4px;">
-                 <b>Org.nr:</b> ${props.org_number || "N/A"}
-               </div>
-
-               <div style="margin-bottom: 4px;">
-                 <b>ID:</b> ${props.id || "N/A"}
+               <div style="margin-top: 8px;">
+                 <a 
+                   href="https://www.allabolag.se/${org}" 
+                   target="_blank"
+                   style="color: blue; text-decoration: underline;"
+                 >
+                   🔗 Se företag
+                 </a>
                </div>
 
              </div>
