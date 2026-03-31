@@ -16,9 +16,13 @@ export default function RoadMap() {
   const [filters, setFilters] = useState({
     owner_type: [],
     road_type: [],
+    owner: null, // 🔥 NY
   });
 
-  const [count, setCount] = useState(0); // 🔥 antal vägar
+  const [count, setCount] = useState(0);
+  const [dataState, setDataState] = useState([]); // 🔥 sparar all data
+  const [search, setSearch] = useState("");
+  const [results, setResults] = useState([]);
 
   useEffect(() => {
     if (!mapRef.current) {
@@ -42,7 +46,8 @@ export default function RoadMap() {
         return;
       }
 
-      // 🔥 FILTRERA
+      setDataState(data); // 🔥 spara för sök
+
       const filtered = data.filter((row) => {
         const ownerMatch =
           filters.owner_type.length === 0 ||
@@ -56,10 +61,14 @@ export default function RoadMap() {
             row.road_type?.toLowerCase().includes(t.toLowerCase())
           );
 
-        return ownerMatch && roadMatch;
+        const ownerNameMatch =
+          !filters.owner ||
+          row.owner?.toLowerCase() === filters.owner.toLowerCase();
+
+        return ownerMatch && roadMatch && ownerNameMatch;
       });
 
-      setCount(filtered.length); // 🔥 sätt antal
+      setCount(filtered.length);
 
       const geojson = {
         type: "FeatureCollection",
@@ -80,7 +89,6 @@ export default function RoadMap() {
         }),
       };
 
-      // 🔥 TA BORT GAMLA LAGER
       if (layerRef.current) {
         layerRef.current.remove();
       }
@@ -151,11 +159,77 @@ export default function RoadMap() {
     fetchRoads();
   }, [filters]);
 
+  // 🔥 SÖK LOGIK
+  const handleSearch = (value) => {
+    setSearch(value);
+
+    if (!value) {
+      setResults([]);
+      return;
+    }
+
+    const uniqueOwners = [
+      ...new Set(dataState.map((d) => d.owner).filter(Boolean)),
+    ];
+
+    const filtered = uniqueOwners
+      .filter((name) =>
+        name.toLowerCase().includes(value.toLowerCase())
+      )
+      .slice(0, 5);
+
+    setResults(filtered);
+  };
+
+  const selectOwner = (owner) => {
+    setFilters((prev) => ({
+      ...prev,
+      owner,
+    }));
+
+    setSearch(owner);
+    setResults([]);
+  };
+
   return (
     <>
       <Filters filters={filters} setFilters={setFilters} />
 
-      {/* 🔥 ANTAL VÄGAR */}
+      {/* 🔥 SEARCH BOX */}
+      <div style={{
+        position: "absolute",
+        top: 80,
+        left: 10,
+        background: "white",
+        padding: "10px",
+        borderRadius: "8px",
+        zIndex: 1000,
+        width: "220px",
+        boxShadow: "0 2px 10px rgba(0,0,0,0.2)"
+      }}>
+        <input
+          type="text"
+          placeholder="Sök väghållare..."
+          value={search}
+          onChange={(e) => handleSearch(e.target.value)}
+          style={{ width: "100%", padding: "6px" }}
+        />
+
+        {results.map((r) => (
+          <div
+            key={r}
+            onClick={() => selectOwner(r)}
+            style={{
+              padding: "5px",
+              cursor: "pointer"
+            }}
+          >
+            {r}
+          </div>
+        ))}
+      </div>
+
+      {/* 🔥 ANTAL */}
       <div style={{
         position: "absolute",
         top: 10,
