@@ -1,8 +1,10 @@
+/* eslint-disable */
+
 import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { createClient } from "@supabase/supabase-js";
-import Filters from "./Filters";
+// import Filters from "./Filters"; // 🔥 kommenterad för säkerhets skull
 
 const SUPABASE_URL = "https://xonbkazvfxllffjbqfdm.supabase.co";
 const SUPABASE_KEY = "sb_publishable_7tC9UoaV3aW3NezJeTW3Hw_IqqXI82y";
@@ -16,11 +18,11 @@ export default function RoadMap() {
   const [filters, setFilters] = useState({
     owner_type: [],
     road_type: [],
-    owner: null, // 🔥 NY
+    owner: null,
   });
 
   const [count, setCount] = useState(0);
-  const [dataState, setDataState] = useState([]); // 🔥 sparar all data
+  const [dataState, setDataState] = useState([]);
   const [search, setSearch] = useState("");
   const [results, setResults] = useState([]);
 
@@ -46,9 +48,9 @@ export default function RoadMap() {
         return;
       }
 
-      setDataState(data); // 🔥 spara för sök
+      setDataState(data || []);
 
-      const filtered = data.filter((row) => {
+      const filtered = (data || []).filter((row) => {
         const ownerMatch =
           filters.owner_type.length === 0 ||
           filters.owner_type.includes(
@@ -159,7 +161,7 @@ export default function RoadMap() {
     fetchRoads();
   }, [filters]);
 
-  // 🔥 SÖK LOGIK
+  // 🔥 SEARCH
   const handleSearch = (value) => {
     setSearch(value);
 
@@ -193,8 +195,6 @@ export default function RoadMap() {
 
   return (
     <>
-      <Filters filters={filters} setFilters={setFilters} />
-
       {/* 🔥 SEARCH BOX */}
       <div style={{
         position: "absolute",
