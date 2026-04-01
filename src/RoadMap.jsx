@@ -103,11 +103,75 @@ export default function RoadMap() {
       layerRef.current.remove();
     }
 
-    const newLayer = L.geoJSON(geojson, {
-      style: {
-        color: "red",
-        weight: 4,
-      },
+     const newLayer = L.geoJSON(geojson, {
+       style: {
+         color: "red",
+         weight: 4,
+       },
+
+       onEachFeature: (feature, layer) => {
+         const props = feature.properties;
+         const org = (props.org_number || "").slice(0, 11);
+
+         const popupContent = `
+           <div style="
+             font-family: Arial;
+             font-size: 14px;
+             min-width: 180px;
+           ">
+             
+             <div style="
+               font-weight: bold;
+               font-size: 16px;
+               margin-bottom: 6px;
+               border-bottom: 1px solid #ddd;
+               padding-bottom: 4px;
+             ">
+               Väginformation
+             </div>
+
+             <div style="margin-bottom: 4px;">
+               <b>Typ:</b> ${props.road_type || "Okänd"}
+             </div>
+
+             <div style="margin-bottom: 4px;">
+               <b>Ägare:</b> ${props.owner || "Okänd"}
+             </div>
+
+             <div style="margin-bottom: 4px;">
+               <b>Ägartyp:</b> ${props.owner_type || "Okänd"}
+             </div>
+
+             <div style="margin-bottom: 4px;">
+               <b>Org.nr:</b> ${org || "N/A"}
+             </div>
+
+             <div style="margin-top: 8px;">
+               <a 
+                 href="https://www.allabolag.se/bransch-s%C3%B6k?q=${org}" 
+                 target="_blank"
+                 style="color: blue; text-decoration: underline;"
+               >
+                 Se mer information
+               </a>
+             </div>
+
+           </div>
+         `;
+
+         layer.bindPopup(popupContent);
+       },
+     }).addTo(mapRef.current);
+
+     // 🔥 ZOOM TILL RESULTAT
+     if (filtered.length > 0) {
+       try {
+         const bounds = newLayer.getBounds();
+         mapRef.current.fitBounds(bounds, { padding: [50, 50] });
+       } catch (e) {
+         console.log("Zoom error:", e);
+       }
+     }
 
       onEachFeature: (feature, layer) => {
         const props = feature.properties;
