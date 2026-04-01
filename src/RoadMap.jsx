@@ -163,17 +163,22 @@ export default function RoadMap() {
        },
      }).addTo(mapRef.current);
 
-     // 🔥 ZOOM TILL RESULTAT
-     if (filtered.length > 0) {
-       try {
-         const bounds = newLayer.getBounds();
-         mapRef.current.fitBounds(bounds, { padding: [50, 50] });
-       } catch (e) {
-         console.log("Zoom error:", e);
-       }
-     }
+    // 🔥 ZOOM TILL RESULTAT
+if (filtered.length > 0 && newLayer.getLayers().length > 0) {
+  const bounds = L.latLngBounds([]);
 
-     layerRef.current = newLayer;
+  newLayer.eachLayer((layer) => {
+    if (layer.getBounds) {
+      bounds.extend(layer.getBounds());
+    }
+  });
+
+  if (bounds.isValid()) {
+    mapRef.current.fitBounds(bounds, { padding: [50, 50] });
+  }
+}
+
+layerRef.current = newLayer;
 
   return (
     <>
