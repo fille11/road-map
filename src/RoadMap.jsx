@@ -1,10 +1,9 @@
-/* eslint-disable */
-
 import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { createClient } from "@supabase/supabase-js";
-// import Filters from "./Filters"; // 🔥 kommenterad för säkerhets skull
+import Filters from "./Filters";
+import OwnerSearch from "./OwnerSearch";
 
 const SUPABASE_URL = "https://xonbkazvfxllffjbqfdm.supabase.co";
 const SUPABASE_KEY = "sb_publishable_7tC9UoaV3aW3NezJeTW3Hw_IqqXI82y";
@@ -18,14 +17,13 @@ export default function RoadMap() {
   const [filters, setFilters] = useState({
     owner_type: [],
     road_type: [],
-    owner: null,
+    owner: null, // 🔥 NY
   });
 
   const [count, setCount] = useState(0);
   const [dataState, setDataState] = useState([]);
-  const [search, setSearch] = useState("");
-  const [results, setResults] = useState([]);
 
+  // 🗺️ INIT MAP (körs 1 gång)
   useEffect(() => {
     if (!mapRef.current) {
       const map = L.map("map").setView([59.8586, 17.6389], 12);
@@ -36,214 +34,164 @@ export default function RoadMap() {
 
       mapRef.current = map;
     }
+  }, []);
 
-    async function fetchRoads() {
+  // 📦 FETCH DATA (1 gång)
+  useEffect(() => {
+    async function fetchData() {
       const { data, error } = await supabase
         .from("roads_geojson")
         .select("*")
         .range(0, 30000);
 
       if (error) {
-        console.error("Supabase error:", error);
+        console.error(error);
         return;
       }
 
-      setDataState(data || []);
+      setDataState(data);
+    }
 
-      const filtered = (data || []).filter((row) => {
-        const ownerMatch =
-          filters.owner_type.length === 0 ||
-          filters.owner_type.includes(
-            row.owner_type?.toLowerCase()
-          );
+    fetchData();
+  }, []);
 
-        const roadMatch =
-          filters.road_type.length === 0 ||
-          filters.road_type.some((t) =>
-            row.road_type?.toLowerCase().includes(t.toLowerCase())
-          );
+  // 🔥 RENDER + FILTER
+  useEffect(() => {
+    if (!mapRef.current || dataState.length === 0) return;
 
-        const ownerNameMatch =
-          !filters.owner ||
-          row.owner?.toLowerCase() === filters.owner.toLowerCase();
+    const filtered = dataState.filter((row) => {
+      const ownerTypeMatch =
+        filters.owner_type.length === 0 ||
+        filters.owner_type.includes(row.owner_type?.toLowerCase());
 
-        return ownerMatch && roadMatch && ownerNameMatch;
-      });
+      const roadTypeMatch =
+        filters.road_type.length === 0 ||
+        filters.road_type.some((t) =>
+          row.road_type?.toLowerCase().includes(t.toLowerCase())
+        );
 
-      setCount(filtered.length);
+      const ownerMatch =
+        !filters.owner ||
+        row.owner?.toLowerCase() === filters.owner.toLowerCase();
 
-      const geojson = {
-        type: "FeatureCollection",
-        features: filtered.map((row) => {
-          const geometry =
-            typeof row.geometry === "string"
-              ? JSON.parse(row.geometry)
-              : row.geometry;
+      return ownerTypeMatch && roadTypeMatch && ownerMatch;
+    });
 
-          return {
-            type: "Feature",
-            geometry,
-            properties: {
-              ...row,
-              geometry: undefined,
-            },
-          };
-        }),
-      };
+    setCount(filtered.length);
 
-      if (layerRef.current) {
-        layerRef.current.remove();
-      }
+    const geojson = {
+      type: "FeatureCollection",
+      features: filtered.map((row) => {
+        const geometry =
+          typeof row.geometry === "string"
+            ? JSON.parse(row.geometry)
+            : row.geometry;
 
-      const newLayer = L.geoJSON(geojson, {
-        style: {
-          color: "red",
-          weight: 4,
-        },
+        return {
+          type: "Feature",
+          geometry,
+          properties: {
+            ...row,
+            geometry: undefined,
+          },
+        };
+      }),
+    };
 
-        onEachFeature: (feature, layer) => {
-          const props = feature.properties;
-          const org = (props.org_number || "").slice(0, 11);
+    // ta bort gamla lager
+    if (layerRef.current) {
+      layerRef.current.remove();
+    }
 
-          const popupContent = `
+    const newLayer = L.geoJSON(geojson, {
+      style: {
+        color: "red",
+        weight: 4,
+      },
+
+      onEachFeature: (feature, layer) => {
+        const props = feature.properties;
+        const org = (props.org_number || "").slice(0, 11);
+
+        const popupContent = `
+          <div style="
+            font-family: Arial;
+            font-size: 14px;
+            min-width: 180px;
+          ">
+            
             <div style="
-              font-family: Arial;
-              font-size: 14px;
-              min-width: 180px;
+              font-weight: bold;
+              font-size: 16px;
+              margin-bottom: 6px;
+              border-bottom: 1px solid #ddd;
+              padding-bottom: 4px;
             ">
-              
-              <div style="
-                font-weight: bold;
-                font-size: 16px;
-                margin-bottom: 6px;
-                border-bottom: 1px solid #ddd;
-                padding-bottom: 4px;
-              ">
-                Väginformation
-              </div>
-
-              <div style="margin-bottom: 4px;">
-                <b>Typ:</b> ${props.road_type || "Okänd"}
-              </div>
-
-              <div style="margin-bottom: 4px;">
-                <b>Ägare:</b> ${props.owner || "Okänd"}
-              </div>
-
-              <div style="margin-bottom: 4px;">
-                <b>Ägartyp:</b> ${props.owner_type || "Okänd"}
-              </div>
-
-              <div style="margin-bottom: 4px;">
-                <b>Org.nr:</b> ${org || "N/A"}
-              </div>
-
-              <div style="margin-top: 8px;">
-                <a 
-                  href="https://www.allabolag.se/bransch-s%C3%B6k?q=${org}" 
-                  target="_blank"
-                  style="color: blue; text-decoration: underline;"
-                >
-                  Se mer information
-                </a>
-              </div>
-
+              Väginformation
             </div>
-          `;
 
-          layer.bindPopup(popupContent);
-        },
-      }).addTo(mapRef.current);
+            <div style="margin-bottom: 4px;">
+              <b>Typ:</b> ${props.road_type || "Okänd"}
+            </div>
 
-      layerRef.current = newLayer;
-    }
+            <div style="margin-bottom: 4px;">
+              <b>Ägare:</b> ${props.owner || "Okänd"}
+            </div>
 
-    fetchRoads();
-  }, [filters]);
+            <div style="margin-bottom: 4px;">
+              <b>Ägartyp:</b> ${props.owner_type || "Okänd"}
+            </div>
 
-  // 🔥 SEARCH
-  const handleSearch = (value) => {
-    setSearch(value);
+            <div style="margin-bottom: 4px;">
+              <b>Org.nr:</b> ${org || "N/A"}
+            </div>
 
-    if (!value) {
-      setResults([]);
-      return;
-    }
+            <div style="margin-top: 8px;">
+              <a 
+                href="https://www.allabolag.se/bransch-s%C3%B6k?q=${org}" 
+                target="_blank"
+                style="color: blue; text-decoration: underline;"
+              >
+                Se mer information
+              </a>
+            </div>
 
-    const uniqueOwners = [
-      ...new Set(dataState.map((d) => d.owner).filter(Boolean)),
-    ];
+          </div>
+        `;
 
-    const filtered = uniqueOwners
-      .filter((name) =>
-        name.toLowerCase().includes(value.toLowerCase())
-      )
-      .slice(0, 5);
+        layer.bindPopup(popupContent);
+      },
+    }).addTo(mapRef.current);
 
-    setResults(filtered);
-  };
-
-  const selectOwner = (owner) => {
-    setFilters((prev) => ({
-      ...prev,
-      owner,
-    }));
-
-    setSearch(owner);
-    setResults([]);
-  };
+    layerRef.current = newLayer;
+  }, [filters, dataState]);
 
   return (
     <>
-      {/* 🔥 SEARCH BOX */}
-      <div style={{
-        position: "absolute",
-        top: 80,
-        left: 10,
-        background: "white",
-        padding: "10px",
-        borderRadius: "8px",
-        zIndex: 1000,
-        width: "220px",
-        boxShadow: "0 2px 10px rgba(0,0,0,0.2)"
-      }}>
-        <input
-          type="text"
-          placeholder="Sök väghållare..."
-          value={search}
-          onChange={(e) => handleSearch(e.target.value)}
-          style={{ width: "100%", padding: "6px" }}
-        />
+      {/* 🔍 FILTERS */}
+      <Filters filters={filters} setFilters={setFilters} />
 
-        {results.map((r) => (
-          <div
-            key={r}
-            onClick={() => selectOwner(r)}
-            style={{
-              padding: "5px",
-              cursor: "pointer"
-            }}
-          >
-            {r}
-          </div>
-        ))}
-      </div>
+      {/* 🔍 OWNER SEARCH */}
+      <OwnerSearch data={dataState} setFilters={setFilters} />
 
-      {/* 🔥 ANTAL */}
-      <div style={{
-        position: "absolute",
-        top: 10,
-        right: 10,
-        background: "white",
-        padding: "8px 12px",
-        borderRadius: "8px",
-        zIndex: 1000,
-        boxShadow: "0 2px 10px rgba(0,0,0,0.2)",
-        fontFamily: "Arial"
-      }}>
+      {/* 🔢 ANTAL */}
+      <div
+        style={{
+          position: "absolute",
+          top: 10,
+          right: 10,
+          background: "white",
+          padding: "8px 12px",
+          borderRadius: "8px",
+          zIndex: 1000,
+          boxShadow: "0 2px 10px rgba(0,0,0,0.2)",
+          fontFamily: "Arial",
+        }}
+      >
         {count} vägar visas
       </div>
 
+      {/* 🗺️ MAP */}
       <div id="map" style={{ height: "100vh", width: "100%" }} />
     </>
   );
