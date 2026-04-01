@@ -14,11 +14,11 @@ export default function OwnerSearch({ data, setFilters }) {
 
     const filtered = data
       .map((d) => d.owner)
-      .filter((v, i, arr) => v && arr.indexOf(v) === i) // unika
+      .filter((v, i, arr) => v && arr.indexOf(v) === i) // unika + ta bort null
       .filter((name) =>
         name.toLowerCase().includes(value.toLowerCase())
       )
-      .slice(0, 5);
+      .slice(0, 5); // max 5 resultat
 
     setResults(filtered);
   };
@@ -26,47 +26,56 @@ export default function OwnerSearch({ data, setFilters }) {
   const selectOwner = (owner) => {
     setFilters((prev) => ({
       ...prev,
-      owner_type: [], // reset checkbox filter
-      road_type: [],
-      owner: owner, // 🔥 ny filter
+      owner: owner,
     }));
 
-    setResults([]);
     setQuery(owner);
+    setResults([]);
   };
 
   return (
     <div style={{
       position: "absolute",
-      top: 80,
+      top: 10,
       left: 10,
+      zIndex: 1000,
       background: "white",
       padding: "10px",
       borderRadius: "8px",
-      zIndex: 1000,
-      width: "220px",
-      boxShadow: "0 2px 10px rgba(0,0,0,0.2)"
+      boxShadow: "0 2px 10px rgba(0,0,0,0.2)",
+      fontFamily: "Arial"
     }}>
+      
       <input
         type="text"
         placeholder="Sök väghållare..."
         value={query}
         onChange={(e) => handleSearch(e.target.value)}
-        style={{ width: "100%", padding: "6px" }}
+        style={{
+          padding: "6px",
+          width: "200px",
+          borderRadius: "4px",
+          border: "1px solid #ccc"
+        }}
       />
 
-      {results.map((r) => (
-        <div
-          key={r}
-          onClick={() => selectOwner(r)}
-          style={{
-            padding: "5px",
-            cursor: "pointer"
-          }}
-        >
-          {r}
+      {results.length > 0 && (
+        <div style={{ marginTop: "8px" }}>
+          {results.map((r, i) => (
+            <div
+              key={i}
+              onClick={() => selectOwner(r)}
+              style={{
+                padding: "4px",
+                cursor: "pointer",
+                borderBottom: "1px solid #eee"
+              }}
+            >
+              {r}
+            </div>
+          ))}
         </div>
-      ))}
+      )}
     </div>
   );
 }
