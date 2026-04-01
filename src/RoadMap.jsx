@@ -17,13 +17,13 @@ export default function RoadMap() {
   const [filters, setFilters] = useState({
     owner_type: [],
     road_type: [],
-    owner: null, // 🔥 NY
+    owner: null,
   });
 
   const [count, setCount] = useState(0);
   const [dataState, setDataState] = useState([]);
 
-  // 🗺️ INIT MAP (körs 1 gång)
+  // 🗺️ INIT MAP
   useEffect(() => {
     if (!mapRef.current) {
       const map = L.map("map").setView([59.8586, 17.6389], 12);
@@ -36,7 +36,7 @@ export default function RoadMap() {
     }
   }, []);
 
-  // 📦 FETCH DATA (1 gång)
+  // 📦 FETCH DATA
   useEffect(() => {
     async function fetchData() {
       const { data, error } = await supabase
@@ -49,13 +49,13 @@ export default function RoadMap() {
         return;
       }
 
-      setDataState(data);
+      setDataState(data || []);
     }
 
     fetchData();
   }, []);
 
-  // 🔥 RENDER + FILTER
+  // 🔥 FILTER + RENDER + ZOOM
   useEffect(() => {
     if (!mapRef.current || dataState.length === 0) return;
 
@@ -98,97 +98,97 @@ export default function RoadMap() {
       }),
     };
 
-    // ta bort gamla lager
+    // ta bort gammal layer
     if (layerRef.current) {
       layerRef.current.remove();
     }
 
-     const newLayer = L.geoJSON(geojson, {
-       style: {
-         color: "red",
-         weight: 4,
-       },
+    const newLayer = L.geoJSON(geojson, {
+      style: {
+        color: "red",
+        weight: 4,
+      },
 
-       onEachFeature: (feature, layer) => {
-         const props = feature.properties;
-         const org = (props.org_number || "").slice(0, 11);
+      onEachFeature: (feature, layer) => {
+        const props = feature.properties;
+        const org = (props.org_number || "").slice(0, 11);
 
-         const popupContent = `
-           <div style="
-             font-family: Arial;
-             font-size: 14px;
-             min-width: 180px;
-           ">
-             
-             <div style="
-               font-weight: bold;
-               font-size: 16px;
-               margin-bottom: 6px;
-               border-bottom: 1px solid #ddd;
-               padding-bottom: 4px;
-             ">
-               Väginformation
-             </div>
+        const popupContent = `
+          <div style="
+            font-family: Arial;
+            font-size: 14px;
+            min-width: 180px;
+          ">
+            
+            <div style="
+              font-weight: bold;
+              font-size: 16px;
+              margin-bottom: 6px;
+              border-bottom: 1px solid #ddd;
+              padding-bottom: 4px;
+            ">
+              Väginformation
+            </div>
 
-             <div style="margin-bottom: 4px;">
-               <b>Typ:</b> ${props.road_type || "Okänd"}
-             </div>
+            <div style="margin-bottom: 4px;">
+              <b>Typ:</b> ${props.road_type || "Okänd"}
+            </div>
 
-             <div style="margin-bottom: 4px;">
-               <b>Ägare:</b> ${props.owner || "Okänd"}
-             </div>
+            <div style="margin-bottom: 4px;">
+              <b>Ägare:</b> ${props.owner || "Okänd"}
+            </div>
 
-             <div style="margin-bottom: 4px;">
-               <b>Ägartyp:</b> ${props.owner_type || "Okänd"}
-             </div>
+            <div style="margin-bottom: 4px;">
+              <b>Ägartyp:</b> ${props.owner_type || "Okänd"}
+            </div>
 
-             <div style="margin-bottom: 4px;">
-               <b>Org.nr:</b> ${org || "N/A"}
-             </div>
+            <div style="margin-bottom: 4px;">
+              <b>Org.nr:</b> ${org || "N/A"}
+            </div>
 
-             <div style="margin-top: 8px;">
-               <a 
-                 href="https://www.allabolag.se/bransch-s%C3%B6k?q=${org}" 
-                 target="_blank"
-                 style="color: blue; text-decoration: underline;"
-               >
-                 Se mer information
-               </a>
-             </div>
+            <div style="margin-top: 8px;">
+              <a 
+                href="https://www.allabolag.se/bransch-s%C3%B6k?q=${org}" 
+                target="_blank"
+                style="color: blue; text-decoration: underline;"
+              >
+                Se mer information
+              </a>
+            </div>
 
-           </div>
-         `;
+          </div>
+        `;
 
-         layer.bindPopup(popupContent);
-       },
-     }).addTo(mapRef.current);
+        layer.bindPopup(popupContent);
+      },
+    }).addTo(mapRef.current);
 
-    // 🔥 ZOOM TILL RESULTAT
-if (filtered.length > 0 && newLayer.getLayers().length > 0) {
-  const bounds = L.latLngBounds([]);
+    // 🔥 ZOOM (fixad version)
+    setTimeout(() => {
+      if (filtered.length > 0 && newLayer.getLayers().length > 0) {
+        const bounds = L.latLngBounds([]);
 
-  newLayer.eachLayer((layer) => {
-    if (layer.getBounds) {
-      bounds.extend(layer.getBounds());
-    }
-  });
+        newLayer.eachLayer((layer) => {
+          if (layer.getBounds) {
+            bounds.extend(layer.getBounds());
+          }
+        });
 
-  if (bounds.isValid()) {
-    mapRef.current.fitBounds(bounds, { padding: [50, 50] });
-  }
-}
+        if (bounds.isValid()) {
+          mapRef.current.fitBounds(bounds, { padding: [50, 50] });
+        }
+      }
+    }, 100);
 
-layerRef.current = newLayer;
+    layerRef.current = newLayer;
+
+  }, [filters, dataState]);
 
   return (
     <>
-      {/* 🔍 FILTERS */}
       <Filters filters={filters} setFilters={setFilters} />
-
-      {/* 🔍 OWNER SEARCH */}
       <OwnerSearch data={dataState} setFilters={setFilters} />
 
-      {/* 🔢 ANTAL */}
       <div
         style={{
           position: "absolute",
@@ -205,7 +205,6 @@ layerRef.current = newLayer;
         {count} vägar visas
       </div>
 
-      {/* 🗺️ MAP */}
       <div id="map" style={{ height: "100vh", width: "100%" }} />
     </>
   );
