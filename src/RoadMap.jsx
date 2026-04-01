@@ -104,10 +104,35 @@ export default function RoadMap() {
     }
 
     const newLayer = L.geoJSON(geojson, {
-      style: {
-        color: "red",
-        weight: 4,
-      },
+        style: (feature) => {
+          const props = feature.properties;
+
+          // 🔥 om en ägare är vald
+          if (filters.owner) {
+            const isSelected =
+              props.owner?.toLowerCase() === filters.owner.toLowerCase();
+
+            if (isSelected) {
+              return {
+                color: "#007bff", // 🔵 blå
+                weight: 5,
+                opacity: 1,
+              };
+            } else {
+              return {
+                color: "#999", // grå
+                weight: 2,
+                opacity: 0.3, // 🔥 fade
+              };
+            }
+          }
+
+          // 🔥 ingen vald → default
+          return {
+            color: "red",
+            weight: 4,
+          };
+        },
 
       onEachFeature: (feature, layer) => {
         const props = feature.properties;
