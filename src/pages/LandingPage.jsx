@@ -1,9 +1,3 @@
-import HeroProduct from "../components/HeroProduct";
-
 export default function LandingPage() {
-  return (
-    <div>
-      <HeroProduct />
-    </div>
-  );
+  return <h1 style={{ color: "white" }}>Landing fungerar</h1>;
 }
