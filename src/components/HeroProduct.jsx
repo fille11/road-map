@@ -118,7 +118,19 @@ export default function HeroProduct() {
         }}
       >
         <h2 style={{ fontSize: "40px", textAlign: "center", maxWidth: "700px" }}>
-          Vägar fryser snabbare än du tror.
+          {"Vägar fryser snabbare än du tror.".split("").map((char, i) => (
+            <motion.span
+              key={i}
+              initial={{ color: "#555" }}
+              whileInView={{ color: "#60a5fa" }}
+              transition={{
+                delay: i * 0.05,
+              }}
+              viewport={{ once: true }}
+            >
+              {char}
+            </motion.span>
+          ))}
         </h2>
       </section>
 
@@ -141,12 +153,30 @@ export default function HeroProduct() {
             justifyContent: "center",
           }}
         >
-          <h2 style={{ fontSize: "40px", marginBottom: "40px" }}>
-            Vid +2°C reagerar den direkt.
-          </h2>
+          {/* TEXT */}
+          <motion.h2
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            style={{ fontSize: "40px", marginBottom: "40px" }}
+          >
+            {"Vid +2°C reagerar den direkt.".split("").map((char, i) => (
+              <motion.span
+                key={i}
+                initial={{ color: "#555" }}
+                whileInView={{ color: "#60a5fa" }}
+                transition={{ delay: i * 0.04 }}
+                viewport={{ once: true }}
+              >
+                {char}
+              </motion.span>
+            ))}
+          </motion.h2>
 
-          {/* Stick again */}
-          <div>
+          {/* PRODUCT */}
+          <div style={{ position: "relative" }}>
+            {/* Stick */}
             <div
               style={{
                 width: "10px",
@@ -156,14 +186,43 @@ export default function HeroProduct() {
               }}
             />
 
-            <div
+            {/* 🔥 TOP (trigger animation) */}
+            <motion.div
+              initial={{ backgroundColor: "#ffffff", scale: 1 }}
+              whileInView={{
+                backgroundColor: "#3b82f6",
+                scale: 1.2,
+              }}
+              transition={{ duration: 0.5 }}
+              viewport={{ once: true }}
               style={{
                 width: "30px",
                 height: "60px",
-                background: "#3b82f6",
                 borderRadius: "20px",
                 margin: "-20px auto 0",
                 boxShadow: "0 0 40px rgba(59,130,246,0.8)",
+              }}
+            />
+
+            {/* ✨ Glow burst */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0 }}
+              whileInView={{
+                opacity: 0.6,
+                scale: 2,
+              }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              style={{
+                position: "absolute",
+                top: "20px",
+                left: "50%",
+                transform: "translateX(-50%)",
+                width: "100px",
+                height: "100px",
+                background: "#3b82f6",
+                filter: "blur(40px)",
+                borderRadius: "50%",
               }}
             />
           </div>
