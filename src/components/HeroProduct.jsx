@@ -191,7 +191,14 @@ export default function HeroProduct() {
           </motion.div>
 
           {/* BENEFITS */}
-          <div style={{ position: "relative", width: "600px", height: "400px", marginTop: "40px" }}>
+         <div
+           style={{
+             position: "relative",
+             width: "600px",
+             height: "400px",
+             marginTop: "120px", // 🔥 MYCKET längre ner
+           }}
+          >
             {[
               "Färre olyckor",
               "Stabilare trafik",
@@ -222,21 +229,21 @@ export default function HeroProduct() {
                   textShadow: "0 0 20px rgba(255,255,255,0.15)",
 
                   top: [
-                    "25%",
-                    "25%",
-                    "45%",
-                    "45%",
-                    "65%",
-                    "65%",
+                    "30%",
+                    "30%",
+                    "50%",
+                    "50%",
+                    "70%",
+                    "70%",
                   ][i],
 
                   left: [
-                    "30%",
-                    "70%",
-                    "25%",
-                    "75%",
                     "35%",
                     "65%",
+                    "30%",
+                    "70%",
+                    "40%",
+                    "60%",
                   ][i],
                 }}
               >
