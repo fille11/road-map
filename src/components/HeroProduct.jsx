@@ -175,63 +175,44 @@ export default function HeroProduct() {
           </motion.h2>
 
           {/* FAKE DATA */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ delay: 1.0 }}
-            style={{
-              color: "#60a5fa",
-              marginBottom: "30px",
-              fontSize: "16px",
-              fontFamily: "monospace",
-              letterSpacing: "1px",
-            }}
-          >
-            +2°C detected
-          </motion.div>
-
-          {/* BENEFITS */}
-          <div style={{ position: "relative", width: "600px", height: "400px" }}>
-            {[
-              "Färre olyckor",
-              "Stabilare trafik",
-              "Mindre salt",
-              "Lägre kostnader",
-              "Bättre miljö",
-              "Datadriven drift",
-            ].map((text, i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, scale: 0.8 }}
+                animate={{
+                  opacity: [0.7, 1, 0.7],
+                  scale: 1,
+                }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 transition={{
                   delay: 1.6 + i * 0.2,
+                  duration: 3,
+                  repeat: Infinity,
                 }}
                 viewport={{ once: true }}
                 style={{
                   position: "absolute",
-                  color: "#ccc", // 🔥 ljusare
+                  color: "#e5e7eb",
                   fontSize: "14px",
                   whiteSpace: "nowrap",
-                  textShadow: "0 0 10px rgba(255,255,255,0.1)",
+                  textShadow: "0 0 20px rgba(255,255,255,0.15)",
 
-                  // 🔥 RUNT PRODUKTEN (inte ovanför)
+                  // 🔥 PERFEKT RUNT PRODUKTEN
                   top: [
-                    "20%",   // top vänster
-                    "20%",   // top höger
-                    "45%",   // mitten vänster
-                    "45%",   // mitten höger
-                    "70%",   // botten vänster
-                    "70%",   // botten höger
+                    "25%",  // top vänster
+                    "25%",  // top höger
+                    "45%",  // mitten vänster
+                    "45%",  // mitten höger
+                    "65%",  // botten vänster
+                    "65%",  // botten höger
                   ][i],
 
                   left: [
-                    "25%",
-                    "65%",
-                    "20%",
-                    "70%",
                     "30%",
-                    "60%",
+                    "70%",
+                    "25%",
+                    "75%",
+                    "35%",
+                    "65%",
                   ][i],
                 }}
               >
