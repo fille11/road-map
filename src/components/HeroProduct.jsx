@@ -190,70 +190,70 @@ export default function HeroProduct() {
             +2°C detected
           </motion.div>
 
-          {/* BENEFITS */}
-         <div
-           style={{
-             position: "relative",
-             width: "600px",
-             height: "400px",
-             marginTop: "120px", // 🔥 MYCKET längre ner
-           }}
-          >
-            {[
-              "Färre olyckor",
-              "Stabilare trafik",
-              "Mindre salt",
-              "Lägre kostnader",
-              "Bättre miljö",
-              "Datadriven drift",
-            ].map((text, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{
-                  opacity: [0.7, 1, 0.7],
-                  scale: 1,
-                }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{
-                  delay: 1.6 + i * 0.2,
-                  duration: 3,
-                  repeat: Infinity,
-                }}
-                viewport={{ once: true }}
-                style={{
-                  position: "absolute",
-                  color: "#e5e7eb",
-                  fontSize: "14px",
-                  whiteSpace: "nowrap",
-                  textShadow: "0 0 20px rgba(255,255,255,0.15)",
-
-                  top: [
-                    "30%",
-                    "30%",
-                    "50%",
-                    "50%",
-                    "70%",
-                    "70%",
-                  ][i],
-
-                  left: [
-                    "35%",
-                    "65%",
-                    "30%",
-                    "70%",
-                    "40%",
-                    "60%",
-                  ][i],
-                }}
-              >
-                {text}
-              </motion.div>
-            ))}
-          </div>
-
           {/* PRODUCT */}
-          <div style={{ position: "relative", marginTop: "40px" }}>
+          <div style={{ position: "relative", marginTop: "80px" }}>
+
+            {/* BENEFITS (NU KOPPLADE TILL PRODUKTEN) */}
+            <div
+              style={{
+                position: "absolute",
+                width: "400px",
+                height: "400px",
+                top: "-120px",
+                left: "50%",
+                transform: "translateX(-50%)",
+              }}
+            >
+              {[
+                "Färre olyckor",
+                "Stabilare trafik",
+                "Mindre salt",
+                "Lägre kostnader",
+                "Bättre miljö",
+                "Datadriven drift",
+              ].map((text, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{
+                    opacity: [0.7, 1, 0.7],
+                  }}
+                  transition={{
+                    delay: 1.6 + i * 0.2,
+                    duration: 3,
+                    repeat: Infinity,
+                  }}
+                  style={{
+                    position: "absolute",
+                    color: "#e5e7eb",
+                    fontSize: "14px",
+                    whiteSpace: "nowrap",
+                    textShadow: "0 0 20px rgba(255,255,255,0.15)",
+
+                    top: [
+                      "10%",
+                      "10%",
+                      "45%",
+                      "45%",
+                      "80%",
+                      "80%",
+                    ][i],
+
+                    left: [
+                      "0%",
+                      "80%",
+                      "0%",
+                      "80%",
+                      "20%",
+                      "60%",
+                    ][i],
+                  }}
+                >
+                  {text}
+                </motion.div>
+              ))}
+            </div>
+
             {/* Stick */}
             <div
               style={{
@@ -281,7 +281,7 @@ export default function HeroProduct() {
                 height: "60px",
                 borderRadius: "20px",
                 margin: "-20px auto 0",
-                boxShadow: "0 0 40px rgba(59,130,246,0.8)",
+                boxShadow: "0 0 80px rgba(59,130,246,0.9)",
               }}
             />
 
@@ -302,10 +302,10 @@ export default function HeroProduct() {
                 top: "20px",
                 left: "50%",
                 transform: "translateX(-50%)",
-                width: "100px",
-                height: "100px",
+                width: "120px",
+                height: "120px",
                 background: "#3b82f6",
-                filter: "blur(40px)",
+                filter: "blur(50px)",
                 borderRadius: "50%",
               }}
             />
