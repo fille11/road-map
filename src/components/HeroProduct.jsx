@@ -230,7 +230,7 @@ export default function HeroProduct() {
                     "65%",
                     "20%",
                     "70%",
-                    "300%",
+                    "30%",
                     "60%",
                   ][i],
                 }}
