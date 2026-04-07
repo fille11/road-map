@@ -1,5 +1,7 @@
+import LandingPage from "./pages/LandingPage";
+
 function App() {
-  return <h1 style={{ color: "black" }}>TEST</h1>;
+  return <LandingPage />;
 }
 
 export default App;
