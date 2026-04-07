@@ -174,7 +174,7 @@ export default function HeroProduct() {
             ))}
           </motion.h2>
 
-          {/* 🔥 FAKE DATA UI */}
+          {/* FAKE DATA */}
           <motion.div
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
@@ -190,8 +190,54 @@ export default function HeroProduct() {
             +2°C detected
           </motion.div>
 
+          {/* BENEFITS */}
+          <div style={{ position: "relative", width: "400px", height: "200px" }}>
+            {[
+              "Färre olyckor",
+              "Stabilare trafik",
+              "Mindre salt",
+              "Lägre kostnader",
+              "Bättre miljö",
+              "Datadriven drift",
+            ].map((text, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 0.8, y: 0 }}
+                transition={{
+                  delay: 1.6 + i * 0.2,
+                }}
+                viewport={{ once: true }}
+                style={{
+                  position: "absolute",
+                  color: "#aaa",
+                  fontSize: "14px",
+                  whiteSpace: "nowrap",
+                  top: [
+                    "0%",
+                    "20%",
+                    "60%",
+                    "80%",
+                    "40%",
+                    "10%",
+                  ][i],
+                  left: [
+                    "10%",
+                    "80%",
+                    "15%",
+                    "75%",
+                    "50%",
+                    "60%",
+                  ][i],
+                }}
+              >
+                {text}
+              </motion.div>
+            ))}
+          </div>
+
           {/* PRODUCT */}
-          <div style={{ position: "relative" }}>
+          <div style={{ position: "relative", marginTop: "40px" }}>
             {/* Stick */}
             <div
               style={{
@@ -202,7 +248,7 @@ export default function HeroProduct() {
               }}
             />
 
-            {/* 🔥 TOP (delayed activation) */}
+            {/* TOP */}
             <motion.div
               initial={{ backgroundColor: "#ffffff", scale: 1 }}
               whileInView={{
@@ -210,7 +256,7 @@ export default function HeroProduct() {
                 scale: 1.2,
               }}
               transition={{
-                delay: 1.3, // 🔥 efter text
+                delay: 1.3,
                 duration: 0.5,
               }}
               viewport={{ once: true }}
@@ -223,7 +269,7 @@ export default function HeroProduct() {
               }}
             />
 
-            {/* ✨ Glow burst */}
+            {/* GLOW */}
             <motion.div
               initial={{ opacity: 0, scale: 0 }}
               whileInView={{
@@ -231,7 +277,7 @@ export default function HeroProduct() {
                 scale: 2,
               }}
               transition={{
-                delay: 1.3, // 🔥 samma timing
+                delay: 1.3,
                 duration: 0.6,
               }}
               viewport={{ once: true }}
