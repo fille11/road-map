@@ -1,12 +1,7 @@
-import RoadMap from "./RoadMap";
+import LandingPage from "./pages/LandingPage";
 
 function App() {
-  return (
-    <div>
-      <h1>North Pole Nordic AB</h1>
-      <RoadMap />
-    </div>
-  );
+  return <LandingPage />;
 }
 
 export default App;
