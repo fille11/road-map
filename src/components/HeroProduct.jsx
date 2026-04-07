@@ -217,21 +217,21 @@ export default function HeroProduct() {
 
                   // 🔥 RUNT PRODUKTEN (inte ovanför)
                   top: [
-                    "10%",   // top vänster
-                    "10%",   // top höger
+                    "20%",   // top vänster
+                    "20%",   // top höger
                     "45%",   // mitten vänster
                     "45%",   // mitten höger
-                    "80%",   // botten vänster
-                    "80%",   // botten höger
+                    "70%",   // botten vänster
+                    "70%",   // botten höger
                   ][i],
 
                   left: [
-                    "5%",
-                    "75%",
-                    "0%",
-                    "80%",
-                    "10%",
+                    "25%",
+                    "65%",
+                    "20%",
                     "70%",
+                    "300%",
+                    "60%",
                   ][i],
                 }}
               >
