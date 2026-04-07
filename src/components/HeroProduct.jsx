@@ -2,10 +2,11 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 
 export default function HeroProduct() {
-  const ref = useRef(null);
+  // 🔥 HERO scroll
+  const heroRef = useRef(null);
 
   const { scrollYProgress } = useScroll({
-    target: ref,
+    target: heroRef,
     offset: ["start start", "end end"],
   });
 
@@ -22,11 +23,19 @@ export default function HeroProduct() {
   // 🧠 text fade in
   const opacity = useTransform(scrollYProgress, [0, 0.3], [0, 1]);
 
+  // 🎥 VIDEO SECTION scroll (NY!)
+  const videoRef = useRef(null);
+
+  const { scrollYProgress: videoProgress } = useScroll({
+    target: videoRef,
+    offset: ["start start", "end end"],
+  });
+
   return (
     <>
       {/* 🔥 HERO SECTION */}
       <section
-        ref={ref}
+        ref={heroRef}
         style={{
           height: "200vh",
           background: "black",
@@ -108,30 +117,83 @@ export default function HeroProduct() {
 
       {/* ❄️ SECTION 2 – PROBLEM */}
       <section
+        ref={ref}
         style={{
-          height: "100vh",
-          background: "black",
-          color: "white",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
+          position: "relative",
+          height: "150vh",
+          overflow: "hidden",
         }}
       >
-        <h2 style={{ fontSize: "40px", textAlign: "center", maxWidth: "700px" }}>
-          {"Vägar fryser snabbare än du tror.".split("").map((char, i) => (
-            <motion.span
-              key={i}
-              initial={{ color: "#555" }}
-              whileInView={{ color: "#60a5fa" }}
-              transition={{
-                delay: i * 0.05,
-              }}
-              viewport={{ once: true }}
-            >
-              {char}
-            </motion.span>
-          ))}
-        </h2>
+        {/* 🌤️ SOMMAR VIDEO */}
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          style={{
+            position: "absolute",
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+          }}
+        >
+          <source src="/summer-road.mp4" type="video/mp4" />
+        </video>
+
+        {/* ❄️ VINTER VIDEO */}
+        <motion.video
+          autoPlay
+          loop
+          muted
+          playsInline
+          style={{
+            position: "absolute",
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            opacity: scrollYProgress,
+          }}
+        >
+          <source src="/winter-road.mp4" type="video/mp4" />
+        </motion.video>
+
+        {/* 🔥 DARK OVERLAY */}
+        <div
+          style={{
+            position: "absolute",
+            width: "100%",
+            height: "100%",
+            background: "rgba(0,0,0,0.5)",
+          }}
+        />
+
+        {/* 🧠 TEXT */}
+        <div
+          style={{
+            position: "sticky",
+            top: 0,
+            height: "100vh",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "white",
+          }}
+        >
+          <h2 style={{ fontSize: "40px", textAlign: "center", maxWidth: "700px" }}>
+            {"Vägar fryser snabbare än du tror.".split("").map((char, i) => (
+              <motion.span
+                key={i}
+                initial={{ color: "#ccc" }}
+                whileInView={{ color: "#60a5fa" }}
+                transition={{
+                  delay: i * 0.05,
+                }}
+              >
+                {char}
+              </motion.span>
+            ))}
+          </h2>
+        </div>
       </section>
 
       {/* 🌡️ SECTION 3 – MAGIC */}
