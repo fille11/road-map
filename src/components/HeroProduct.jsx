@@ -191,7 +191,7 @@ export default function HeroProduct() {
           </motion.div>
 
           {/* BENEFITS */}
-          <div style={{ position: "relative", width: "400px", height: "200px" }}>
+          <div style={{ position: "relative", width: "600px", height: "400px" }}>
             {[
               "Färre olyckor",
               "Stabilare trafik",
@@ -202,32 +202,36 @@ export default function HeroProduct() {
             ].map((text, i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 0.8, y: 0 }}
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
                 transition={{
                   delay: 1.6 + i * 0.2,
                 }}
                 viewport={{ once: true }}
                 style={{
                   position: "absolute",
-                  color: "#aaa",
+                  color: "#ccc", // 🔥 ljusare
                   fontSize: "14px",
                   whiteSpace: "nowrap",
+                  textShadow: "0 0 10px rgba(255,255,255,0.1)",
+
+                  // 🔥 RUNT PRODUKTEN (inte ovanför)
                   top: [
-                    "0%",
-                    "20%",
-                    "60%",
-                    "80%",
-                    "40%",
-                    "10%",
+                    "10%",   // top vänster
+                    "10%",   // top höger
+                    "45%",   // mitten vänster
+                    "45%",   // mitten höger
+                    "80%",   // botten vänster
+                    "80%",   // botten höger
                   ][i],
+
                   left: [
-                    "10%",
-                    "80%",
-                    "15%",
+                    "5%",
                     "75%",
-                    "50%",
-                    "60%",
+                    "0%",
+                    "80%",
+                    "10%",
+                    "70%",
                   ][i],
                 }}
               >
