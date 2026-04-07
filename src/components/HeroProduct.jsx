@@ -117,7 +117,7 @@ export default function HeroProduct() {
 
       {/* ❄️ SECTION 2 – PROBLEM */}
       <section
-        ref={ref}
+        ref={videoRef}
         style={{
           position: "relative",
           height: "150vh",
@@ -151,7 +151,7 @@ export default function HeroProduct() {
             width: "100%",
             height: "100%",
             objectFit: "cover",
-            opacity: scrollYProgress,
+            opacity: videoProgress, // ✅ FIX
           }}
         >
           <source src="/winter-road.mp4" type="video/mp4" />
