@@ -199,7 +199,7 @@ export default function HeroProduct() {
                 position: "absolute",
                 width: "400px",
                 height: "400px",
-                top: "-120px",
+                top: "-160px",
                 left: "50%",
                 transform: "translateX(-50%)",
               }}
@@ -231,17 +231,17 @@ export default function HeroProduct() {
                     textShadow: "0 0 20px rgba(255,255,255,0.15)",
 
                     top: [
-                      "10%",
-                      "10%",
+                      "15%",
+                      "15%",
                       "45%",
                       "45%",
-                      "80%",
-                      "80%",
+                      "75%",
+                      "75%",
                     ][i],
 
                     left: [
-                      "0%",
-                      "80%",
+                      "5%",
+                      "75%",
                       "0%",
                       "80%",
                       "20%",
