@@ -2,39 +2,67 @@ import { motion } from "framer-motion";
 
 export default function HeroProduct() {
   return (
-    <section className="h-screen w-full bg-black text-white flex flex-col items-center justify-center relative overflow-hidden">
+    <section style={{
+      height: "100vh",
+      background: "black",
+      color: "white",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      overflow: "hidden"
+    }}>
 
-      {/* Glow background */}
-      <div className="absolute w-[600px] h-[600px] bg-blue-500 opacity-20 blur-3xl rounded-full" />
+      {/* Glow */}
+      <div style={{
+        position: "absolute",
+        width: "500px",
+        height: "500px",
+        background: "#3b82f6",
+        opacity: 0.2,
+        filter: "blur(120px)",
+        borderRadius: "50%"
+      }} />
 
-      {/* PRODUCT */}
-      <div className="relative mb-12">
+      {/* Product */}
+      <div style={{ marginBottom: "40px", position: "relative" }}>
 
-        {/* Bottom part */}
-        <div className="w-6 h-64 bg-gray-400 rounded-full mx-auto" />
+        {/* Stick */}
+        <div style={{
+          width: "10px",
+          height: "200px",
+          background: "#aaa",
+          margin: "0 auto"
+        }} />
 
-        {/* Top part (magic) */}
+        {/* Top (animated) */}
         <motion.div
           initial={{ backgroundColor: "#ffffff" }}
           animate={{
-            backgroundColor: ["#ffffff", "#60a5fa", "#3b82f6"],
+            backgroundColor: ["#ffffff", "#60a5fa", "#3b82f6"]
           }}
           transition={{
-            duration: 3,
+            duration: 2,
             repeat: Infinity,
-            repeatType: "reverse",
+            repeatType: "reverse"
           }}
-          className="w-10 h-16 rounded-full mx-auto -mt-6 shadow-[0_0_40px_rgba(59,130,246,0.8)]"
+          style={{
+            width: "30px",
+            height: "60px",
+            borderRadius: "20px",
+            margin: "-20px auto 0",
+            boxShadow: "0 0 40px rgba(59,130,246,0.8)"
+          }}
         />
 
       </div>
 
-      {/* TEXT */}
+      {/* Text */}
       <motion.h1
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1 }}
-        className="text-5xl md:text-6xl font-semibold text-center max-w-3xl"
+        style={{ fontSize: "48px", textAlign: "center" }}
       >
         Se vintern innan den slår till.
       </motion.h1>
@@ -43,22 +71,10 @@ export default function HeroProduct() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
-        className="text-gray-400 mt-6 text-lg text-center max-w-xl"
+        style={{ color: "#aaa", marginTop: "20px" }}
       >
-        En intelligent snökäpp kopplad till realtidsdata om vägar och temperatur.
+        En intelligent snökäpp kopplad till realtidsdata.
       </motion.p>
-
-      {/* CTA */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1 }}
-        className="mt-10"
-      >
-        <button className="px-8 py-4 bg-white text-black rounded-full text-lg font-medium hover:scale-105 transition">
-          Utforska plattformen
-        </button>
-      </motion.div>
 
     </section>
   );
