@@ -175,6 +175,31 @@ export default function HeroProduct() {
           </motion.h2>
 
           {/* FAKE DATA */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ delay: 1.0 }}
+            style={{
+              color: "#60a5fa",
+              marginBottom: "30px",
+              fontSize: "16px",
+              fontFamily: "monospace",
+              letterSpacing: "1px",
+            }}
+          >
+            +2°C detected
+          </motion.div>
+
+          {/* BENEFITS */}
+          <div style={{ position: "relative", width: "600px", height: "400px", marginTop: "40px" }}>
+            {[
+              "Färre olyckor",
+              "Stabilare trafik",
+              "Mindre salt",
+              "Lägre kostnader",
+              "Bättre miljö",
+              "Datadriven drift",
+            ].map((text, i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, scale: 0.8 }}
@@ -196,14 +221,13 @@ export default function HeroProduct() {
                   whiteSpace: "nowrap",
                   textShadow: "0 0 20px rgba(255,255,255,0.15)",
 
-                  // 🔥 PERFEKT RUNT PRODUKTEN
                   top: [
-                    "25%",  // top vänster
-                    "25%",  // top höger
-                    "45%",  // mitten vänster
-                    "45%",  // mitten höger
-                    "65%",  // botten vänster
-                    "65%",  // botten höger
+                    "25%",
+                    "25%",
+                    "45%",
+                    "45%",
+                    "65%",
+                    "65%",
                   ][i],
 
                   left: [
