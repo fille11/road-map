@@ -177,7 +177,7 @@ export default function HeroProduct() {
             const text = "Vägar fryser snabbare än du tror.";
 
             return (
-              <h2 style={{ fontSize: "40px", maxWidth: "700px" }}>
+              <h2 style={{ fontSize: "20px", maxWidth: "700px" }}>
                 {text.split("").map((char, i) => {
                   const start = 0.4 + (i / text.length) * 0.6;
                   const end = start + 0.02;
