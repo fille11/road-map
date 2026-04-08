@@ -124,12 +124,13 @@ export default function HeroProduct() {
           overflow: "hidden",
         }}
       >
-        {/* 🌤️ SOMMAR VIDEO */}
+        {/* 🎥 VIDEO */}
         <video
           autoPlay
           loop
           muted
           playsInline
+          preload="auto"
           style={{
             position: "absolute",
             width: "100%",
@@ -137,25 +138,11 @@ export default function HeroProduct() {
             objectFit: "cover",
           }}
         >
-          <source src="/summer-road.mp4" type="video/mp4" />
+          <source
+            src="https://res.cloudinary.com/dologmyu6/video/upload/v1775673374/Videoprojekt_21_rreief.mp4"
+            type="video/mp4"
+          />
         </video>
-
-        {/* ❄️ VINTER VIDEO */}
-        <motion.video
-          autoPlay
-          loop
-          muted
-          playsInline
-          style={{
-            position: "absolute",
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-            opacity: videoProgress, // ✅ FIX
-          }}
-        >
-          <source src="/winter-road.mp4" type="video/mp4" />
-        </motion.video>
 
         {/* 🔥 DARK OVERLAY */}
         <div
@@ -163,11 +150,11 @@ export default function HeroProduct() {
             position: "absolute",
             width: "100%",
             height: "100%",
-            background: "rgba(0,0,0,0.5)",
+            background: "rgba(0,0,0,0.4)",
           }}
         />
 
-        {/* 🧠 TEXT */}
+        {/* 🧠 TEXT (SYNCAD MED VIDEO) */}
         <div
           style={{
             position: "sticky",
@@ -179,20 +166,36 @@ export default function HeroProduct() {
             color: "white",
           }}
         >
-          <h2 style={{ fontSize: "40px", textAlign: "center", maxWidth: "700px" }}>
-            {"Vägar fryser snabbare än du tror.".split("").map((char, i) => (
-              <motion.span
-                key={i}
-                initial={{ color: "#ccc" }}
-                whileInView={{ color: "#60a5fa" }}
-                transition={{
-                  delay: i * 0.05,
-                }}
-              >
-                {char}
-              </motion.span>
-            ))}
-          </h2>
+          {(() => {
+            const text = "Vägar fryser snabbare än du tror.";
+
+            return (
+              <h2 style={{ fontSize: "40px", textAlign: "center", maxWidth: "700px" }}>
+                {text.split("").map((char, i) => {
+                  const start = 0.4 + (i / text.length) * 0.6;
+                  const end = start + 0.02;
+
+                  const color = useTransform(
+                    videoProgress,
+                    [start, end],
+                    ["#444", "#60a5fa"]
+                  );
+
+                  return (
+                    <motion.span
+                      key={i}
+                      style={{
+                        color,
+                        textShadow: "0 0 8px rgba(96,165,250,0.6)",
+                      }}
+                    >
+                      {char}
+                    </motion.span>
+                  );
+                })}
+              </h2>
+            );
+          })()}
         </div>
       </section>
 
