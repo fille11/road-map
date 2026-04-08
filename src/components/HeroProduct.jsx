@@ -133,8 +133,10 @@ export default function HeroProduct() {
           preload="auto"
           style={{
             position: "absolute",
-            width: "100%",
-            height: "100%",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
             objectFit: "cover",
           }}
         >
@@ -144,13 +146,16 @@ export default function HeroProduct() {
           />
         </video>
 
-        {/* 🔥 DARK OVERLAY */}
+        {/* 🔥 GRADIENT OVERLAY (Apple-style) */}
         <div
           style={{
             position: "absolute",
-            width: "100%",
-            height: "100%",
-            background: "rgba(0,0,0,0.4)",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            background:
+              "linear-gradient(to right, rgba(0,0,0,0.65), rgba(0,0,0,0.2))",
           }}
         />
 
@@ -164,13 +169,15 @@ export default function HeroProduct() {
             alignItems: "center",
             justifyContent: "center",
             color: "white",
+            textAlign: "center",
+            padding: "0 20px",
           }}
         >
           {(() => {
             const text = "Vägar fryser snabbare än du tror.";
 
             return (
-              <h2 style={{ fontSize: "40px", textAlign: "center", maxWidth: "700px" }}>
+              <h2 style={{ fontSize: "40px", maxWidth: "700px" }}>
                 {text.split("").map((char, i) => {
                   const start = 0.4 + (i / text.length) * 0.6;
                   const end = start + 0.02;
@@ -186,7 +193,7 @@ export default function HeroProduct() {
                       key={i}
                       style={{
                         color,
-                        textShadow: "0 0 8px rgba(96,165,250,0.6)",
+                        textShadow: "0 0 10px rgba(96,165,250,0.7)",
                       }}
                     >
                       {char}
