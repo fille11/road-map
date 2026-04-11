@@ -2,40 +2,86 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 
 export default function HeroProduct() {
-  // 🔥 HERO scroll
-  const heroRef = useRef(null);
+  const ref = useRef(null);
 
   const { scrollYProgress } = useScroll({
-    target: heroRef,
+    target: ref,
     offset: ["start start", "end end"],
   });
 
-  // 🔵 färg ändras när man scrollar
-  const bgColor = useTransform(
+  // 🔵 färg för toppen
+  const topColor = useTransform(
     scrollYProgress,
-    [0.2, 0.5],
+    [0.3, 0.6],
     ["#ffffff", "#3b82f6"]
   );
 
-  // ✨ glow ökar lite
-  const glowOpacity = useTransform(scrollYProgress, [0, 0.5], [0.2, 0.6]);
-
-  // 🧠 text fade in
-  const opacity = useTransform(scrollYProgress, [0, 0.3], [0, 1]);
-
-  // 🎥 VIDEO SECTION scroll (NY!)
-  const videoRef = useRef(null);
-
-  const { scrollYProgress: videoProgress } = useScroll({
-    target: videoRef,
-    offset: ["start start", "end end"],
-  });
+  // ✨ glow
+  const glowOpacity = useTransform(scrollYProgress, [0.3, 0.6], [0, 0.6]);
 
   return (
-    <>
-      {/* 🔥 HERO SECTION */}
+    <div ref={ref}>
+      {/* 🔥 HERO */}
       <section
-        ref={heroRef}
+        style={{
+          height: "150vh",
+          background: "black",
+          color: "white",
+        }}
+      >
+        <div
+          style={{
+            position: "sticky",
+            top: 0,
+            height: "100vh",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <h1 style={{ fontSize: "48px", marginBottom: "20px" }}>
+            Se vintern innan den slår till.
+          </h1>
+
+          <p style={{ color: "#aaa" }}>
+            En intelligent snökäpp kopplad till realtidsdata.
+          </p>
+        </div>
+      </section>
+
+      {/* ❄️ PROBLEM */}
+      <section
+        style={{
+          height: "100vh",
+          background: "black",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <h2 style={{ fontSize: "40px", maxWidth: "700px", textAlign: "center" }}>
+          {"Vägar fryser snabbare än du tror.".split("").map((char, i) => {
+            const start = i / 40;
+            const end = start + 0.02;
+
+            const color = useTransform(
+              scrollYProgress,
+              [start, end],
+              ["#444", "#60a5fa"]
+            );
+
+            return (
+              <motion.span key={i} style={{ color }}>
+                {char}
+              </motion.span>
+            );
+          })}
+        </h2>
+      </section>
+
+      {/* 🧊 SOLUTION */}
+      <section
         style={{
           height: "200vh",
           background: "black",
@@ -51,15 +97,18 @@ export default function HeroProduct() {
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
-            overflow: "hidden",
           }}
         >
-          {/* Glow */}
+          <h2 style={{ fontSize: "40px", marginBottom: "20px" }}>
+            Vid +2°C reagerar den direkt.
+          </h2>
+
+          {/* glow */}
           <motion.div
             style={{
               position: "absolute",
-              width: "500px",
-              height: "500px",
+              width: "400px",
+              height: "400px",
               background: "#3b82f6",
               opacity: glowOpacity,
               filter: "blur(120px)",
@@ -67,8 +116,9 @@ export default function HeroProduct() {
             }}
           />
 
-          {/* Product */}
-          <div style={{ marginBottom: "40px", position: "relative" }}>
+          {/* PRODUCT */}
+          <div style={{ position: "relative", marginTop: "40px" }}>
+            {/* stick */}
             <div
               style={{
                 width: "10px",
@@ -78,9 +128,10 @@ export default function HeroProduct() {
               }}
             />
 
+            {/* top */}
             <motion.div
               style={{
-                backgroundColor: bgColor,
+                backgroundColor: topColor,
                 width: "30px",
                 height: "60px",
                 borderRadius: "20px",
@@ -89,124 +140,10 @@ export default function HeroProduct() {
               }}
             />
           </div>
-
-          {/* Text */}
-          <motion.h1
-            style={{
-              opacity,
-              fontSize: "48px",
-              textAlign: "center",
-              maxWidth: "800px",
-            }}
-          >
-            Se vintern innan den slår till.
-          </motion.h1>
-
-          <motion.p
-            style={{
-              opacity,
-              color: "#aaa",
-              marginTop: "20px",
-              textAlign: "center",
-            }}
-          >
-            En intelligent snökäpp kopplad till realtidsdata.
-          </motion.p>
         </div>
       </section>
 
-      {/* ❄️ SECTION 2 – PROBLEM */}
-      <section
-        ref={videoRef}
-        style={{
-          position: "relative",
-          height: "150vh",
-          overflow: "hidden",
-        }}
-      >
-        {/* 🎥 VIDEO */}
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="auto"
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
-            objectFit: "cover",
-          }}
-        >
-          <source
-            src="https://res.cloudinary.com/dologmyu6/video/upload/v1775674112/Videoprojekt_25_az7tbv.mp4"
-            type="video/mp4"
-          />
-        </video>
-
-        {/* 🔥 GRADIENT OVERLAY (Apple-style) */}
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
-            background:
-              "linear-gradient(to right, rgba(0,0,0,0.65), rgba(0,0,0,0.2))",
-          }}
-        />
-
-        {/* 🧠 TEXT (SYNCAD MED VIDEO) */}
-        <div
-          style={{
-            position: "sticky",
-            top: 0,
-            height: "100vh",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            color: "white",
-            textAlign: "center",
-            padding: "0 20px",
-          }}
-        >
-          {(() => {
-            const text = "Vägar fryser snabbare än du tror.";
-
-            return (
-              <h2 style={{ fontSize: "40px", maxWidth: "700px" }}>
-                {text.split("").map((char, i) => {
-                  const start = 0.4 + (i / text.length) * 0.6;
-                  const end = start + 0.02;
-
-                  const color = useTransform(
-                    videoProgress,
-                    [start, end],
-                    ["#444", "#60a5fa"]
-                  );
-
-                  return (
-                    <motion.span
-                      key={i}
-                      style={{
-                        color,
-                        textShadow: "0 0 10px rgba(96,165,250,0.7)",
-                      }}
-                    >
-                      {char}
-                    </motion.span>
-                  );
-                })}
-              </h2>
-            );
-          })()}
-        </div>
-      </section>
-
-      {/* 🌡️ SECTION 3 – MAGIC */}
+      {/* 💎 VALUE */}
       <section
         style={{
           height: "200vh",
@@ -220,203 +157,62 @@ export default function HeroProduct() {
             top: 0,
             height: "100vh",
             display: "flex",
-            flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
           }}
         >
-          {/* TEXT */}
-          <motion.h2
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            style={{ fontSize: "40px", marginBottom: "20px" }}
-          >
-            {"Vid +2°C reagerar den direkt.".split("").map((char, i) => (
-              <motion.span
+          <div style={{ position: "relative", width: "600px", height: "400px" }}>
+            {[
+              "Färre olyckor",
+              "Stabilare trafik",
+              "Mindre salt",
+              "Lägre kostnader",
+              "Bättre miljö",
+              "Datadriven drift",
+            ].map((text, i) => (
+              <motion.div
                 key={i}
-                initial={{ color: "#555" }}
-                whileInView={{ color: "#60a5fa" }}
-                transition={{ delay: i * 0.04 }}
-                viewport={{ once: true }}
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                transition={{ delay: i * 0.2 }}
+                style={{
+                  position: "absolute",
+                  color: "#ccc",
+                  fontSize: "14px",
+
+                  top: ["20%", "20%", "50%", "50%", "75%", "75%"][i],
+                  left: ["30%", "70%", "25%", "75%", "40%", "60%"][i],
+                }}
               >
-                {char}
-              </motion.span>
+                {text}
+              </motion.div>
             ))}
-          </motion.h2>
 
-          {/* FAKE DATA */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ delay: 1.0 }}
-            style={{
-              color: "#60a5fa",
-              marginBottom: "30px",
-              fontSize: "16px",
-              fontFamily: "monospace",
-              letterSpacing: "1px",
-            }}
-          >
-            +2°C detected
-          </motion.div>
+            {/* PRODUCT */}
+            <div style={{ position: "absolute", bottom: "0", left: "50%", transform: "translateX(-50%)" }}>
+              <div
+                style={{
+                  width: "10px",
+                  height: "200px",
+                  background: "#aaa",
+                  margin: "0 auto",
+                }}
+              />
 
-          {/* PRODUCT */}
-          <div style={{ position: "relative", marginTop: "80px" }}>
-
-            {/* BENEFITS (NU KOPPLADE TILL PRODUKTEN) */}
-            <div
-              style={{
-                position: "absolute",
-                width: "400px",
-                height: "400px",
-                top: "-160px",
-                left: "50%",
-                transform: "translateX(-50%)",
-              }}
-            >
-              {[
-                "Färre olyckor",
-                "Stabilare trafik",
-                "Mindre salt",
-                "Lägre kostnader",
-                "Bättre miljö",
-                "Datadriven drift",
-              ].map((text, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{
-                    opacity: [0.7, 1, 0.7],
-                  }}
-                  transition={{
-                    delay: 1.6 + i * 0.2,
-                    duration: 3,
-                    repeat: Infinity,
-                  }}
-                  style={{
-                    position: "absolute",
-                    color: "#e5e7eb",
-                    fontSize: "14px",
-                    whiteSpace: "nowrap",
-                    textShadow: "0 0 20px rgba(255,255,255,0.15)",
-
-                    top: [
-                      "15%",
-                      "15%",
-                      "45%",
-                      "45%",
-                      "75%",
-                      "75%",
-                    ][i],
-
-                    left: [
-                      "5%",
-                      "75%",
-                      "0%",
-                      "80%",
-                      "20%",
-                      "60%",
-                    ][i],
-                  }}
-                >
-                  {text}
-                </motion.div>
-              ))}
+              <div
+                style={{
+                  width: "30px",
+                  height: "60px",
+                  background: "#3b82f6",
+                  borderRadius: "20px",
+                  margin: "-20px auto 0",
+                  boxShadow: "0 0 40px rgba(59,130,246,0.8)",
+                }}
+              />
             </div>
-
-            {/* Stick */}
-            <div
-              style={{
-                width: "10px",
-                height: "200px",
-                background: "#aaa",
-                margin: "0 auto",
-              }}
-            />
-
-            {/* TOP */}
-            <motion.div
-              initial={{ backgroundColor: "#ffffff", scale: 1 }}
-              whileInView={{
-                backgroundColor: "#3b82f6",
-                scale: 1.2,
-              }}
-              transition={{
-                delay: 1.3,
-                duration: 0.5,
-              }}
-              viewport={{ once: true }}
-              style={{
-                width: "30px",
-                height: "60px",
-                borderRadius: "20px",
-                margin: "-20px auto 0",
-                boxShadow: "0 0 80px rgba(59,130,246,0.9)",
-              }}
-            />
-
-            {/* GLOW */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0 }}
-              whileInView={{
-                opacity: 0.6,
-                scale: 2,
-              }}
-              transition={{
-                delay: 1.3,
-                duration: 0.6,
-              }}
-              viewport={{ once: true }}
-              style={{
-                position: "absolute",
-                top: "20px",
-                left: "50%",
-                transform: "translateX(-50%)",
-                width: "120px",
-                height: "120px",
-                background: "#3b82f6",
-                filter: "blur(50px)",
-                borderRadius: "50%",
-              }}
-            />
           </div>
         </div>
       </section>
-
-      {/* 🗺️ SECTION 4 – PLATFORM */}
-      <section
-        style={{
-          height: "100vh",
-          background: "black",
-          color: "white",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <h2 style={{ fontSize: "40px", marginBottom: "20px" }}>
-          Kopplad till realtidsdata
-        </h2>
-
-        <p style={{ color: "#aaa" }}>
-          Få full kontroll över vägnätet.
-        </p>
-
-        {/* Fake map */}
-        <div
-          style={{
-            width: "600px",
-            height: "300px",
-            background: "#111",
-            marginTop: "40px",
-            borderRadius: "20px",
-            border: "1px solid #333",
-          }}
-        />
-      </section>
-    </>
+    </div>
   );
 }
