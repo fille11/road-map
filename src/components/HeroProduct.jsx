@@ -1,6 +1,6 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
-import SnowStick3D from "../components/SnowStick3D";
+import SnowStick3D from "./SnowStick3D";
 
 export default function HeroProduct() {
   const ref = useRef(null);
