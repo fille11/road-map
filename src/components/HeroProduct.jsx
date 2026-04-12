@@ -47,7 +47,7 @@ export default function HeroProduct() {
           style={{ opacity: videoOpacity }}
         >
           <source
-            src="https://pixabay.com/videos/download/video-191443_medium.mp4"
+            src="https://xonbkazvfxllffjbqfdm.supabase.co/storage/v1/object/sign/videos/Videoprojekt%203.mp4?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV83NmFmNGE4OC1jMDQxLTQyMzMtYWNmZC0wZTEwZTgzODAyOTEiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJ2aWRlb3MvVmlkZW9wcm9qZWt0IDMubXA0IiwiaWF0IjoxNzc1OTk2NTUzLCJleHAiOjE5MzM2NzY1NTN9.vOWLHZRQtGLUCiBFvCwf2INtdTOFrpYH1MXSqhhrC4Q"
             type="video/mp4"
           />
         </motion.video>
