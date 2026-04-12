@@ -1,165 +1,166 @@
-import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
+import { motion } from "framer-motion";
 import SnowStick3D from "./SnowStick3D";
 
 export default function HeroProduct() {
-  const ref = useRef(null);
-
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start start", "end end"],
-  });
-
-  // 🧠 opacity för text
-  const opacity = useTransform(scrollYProgress, [0, 0.2], [0, 1]);
-
-  // 🔵 glow intensity
-  const glow = useTransform(scrollYProgress, [0.2, 0.5], [0.2, 0.8]);
-
-  // 🔵 scale effect
-  const scale = useTransform(scrollYProgress, [0, 0.5], [1, 1.2]);
-
   return (
-    <section
-      ref={ref}
-      style={{
-        height: "500vh",
-        background: "black",
-        color: "white",
-      }}
-    >
-      <div
+    <>
+      {/* 🎬 SECTION 1 – VIDEO + EMOTION */}
+      <section
         style={{
-          position: "sticky",
-          top: 0,
-          height: "100vh",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
+          position: "relative",
+          height: "120vh",
           overflow: "hidden",
         }}
       >
-        {/* 🔥 GLOW */}
-        <motion.div
+        {/* VIDEO */}
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
           style={{
             position: "absolute",
-            width: "600px",
-            height: "600px",
-            background: "#3b82f6",
-            opacity: glow,
-            filter: "blur(150px)",
-            borderRadius: "50%",
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+          }}
+        >
+          <source
+            src="https://res.cloudinary.com/dologmyu6/video/upload/v1775673374/Videoprojekt_21_rreief.mp4"
+            type="video/mp4"
+          />
+        </video>
+
+        {/* DARK OVERLAY */}
+        <div
+          style={{
+            position: "absolute",
+            width: "100%",
+            height: "100%",
+            background: "rgba(0,0,0,0.5)",
           }}
         />
 
-        {/* 🧊 3D MODEL */}
-        <motion.div style={{ scale }}>
-          <SnowStick3D />
-        </motion.div>
-
-        {/* 🧠 SCENE TEXT */}
-        <motion.div
+        {/* TEXT */}
+        <div
           style={{
-            position: "absolute",
-            bottom: "15%",
+            position: "sticky",
+            top: 0,
+            height: "100vh",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "white",
             textAlign: "center",
-            opacity,
+            padding: "20px",
           }}
         >
-          <h1 style={{ fontSize: "48px", marginBottom: "10px" }}>
-            Se vintern innan den slår till.
-          </h1>
-          <p style={{ color: "#aaa" }}>
-            En intelligent snökäpp kopplad till realtidsdata.
-          </p>
-        </motion.div>
-      </div>
+          <motion.h1
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            style={{ fontSize: "48px", marginBottom: "20px" }}
+          >
+            Vägar fryser snabbare än du tror.
+          </motion.h1>
 
-      {/* ⚠️ SCENE 2 */}
-      <div
+          <motion.p
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ delay: 0.4 }}
+            style={{ color: "#ccc", maxWidth: "600px" }}
+          >
+            Tusentals olyckor sker varje vinter på grund av halka.
+          </motion.p>
+
+          {/* DATA */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ delay: 0.8 }}
+            style={{ marginTop: "30px", color: "#60a5fa" }}
+          >
+            <h2 style={{ fontSize: "40px" }}>~15 000 olyckor / år</h2>
+            <p style={{ color: "#aaa" }}>Flera hundra allvarligt skadade</p>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* 📊 SECTION 2 – PROBLEM */}
+      <section
         style={{
           height: "100vh",
+          background: "black",
+          color: "white",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-        }}
-      >
-        <h2 style={{ fontSize: "40px" }}>
-          {"Vägar fryser snabbare än du tror.".split("").map((char, i) => (
-            <motion.span
-              key={i}
-              initial={{ color: "#444" }}
-              whileInView={{ color: "#60a5fa" }}
-              transition={{ delay: i * 0.05 }}
-            >
-              {char}
-            </motion.span>
-          ))}
-        </h2>
-      </div>
-
-      {/* 🔵 SCENE 3 */}
-      <div
-        style={{
-          height: "100vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          flexDirection: "column",
+          textAlign: "center",
+          padding: "20px",
         }}
       >
         <motion.h2
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
-          style={{ fontSize: "40px", color: "#60a5fa" }}
+          transition={{ duration: 0.8 }}
+          style={{ fontSize: "40px" }}
         >
-          Vid +2°C reagerar den direkt.
+          Problemet är inte snön.
+          <br />
+          Det är temperaturen.
         </motion.h2>
+      </section>
 
-        <motion.p
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-          style={{ color: "#aaa" }}
-        >
-          Realtidsvarning direkt på vägen.
-        </motion.p>
-      </div>
-
-      {/* 💎 SCENE 4 */}
-      <div
+      {/* 🧊 SECTION 3 – PRODUKT */}
+      <section
         style={{
-          height: "100vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
+          height: "120vh",
+          background: "black",
+          color: "white",
         }}
       >
-        <div style={{ textAlign: "center" }}>
-          {[
-            "Färre olyckor",
-            "Mindre salt",
-            "Lägre kostnader",
-            "Bättre miljö",
-          ].map((text, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.2 }}
-              style={{ margin: "10px 0", fontSize: "20px" }}
-            >
-              {text}
-            </motion.div>
-          ))}
-        </div>
-      </div>
+        <div
+          style={{
+            position: "sticky",
+            top: 0,
+            height: "100vh",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "20px",
+          }}
+        >
+          <motion.h2
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            style={{ fontSize: "40px", marginBottom: "40px", textAlign: "center" }}
+          >
+            Vid +2°C reagerar den direkt.
+          </motion.h2>
 
-      {/* 🚀 SCENE 5 */}
-      <div
+          {/* 3D MODEL */}
+          <div style={{ width: "400px", height: "400px" }}>
+            <SnowStick3D />
+          </div>
+
+          <motion.p
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            style={{ color: "#aaa", marginTop: "20px", textAlign: "center" }}
+          >
+            En visuell varning direkt på vägen.
+          </motion.p>
+        </div>
+      </section>
+
+      {/* 🚀 SECTION 4 – CTA */}
+      <section
         style={{
           height: "100vh",
+          background: "black",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -179,7 +180,7 @@ export default function HeroProduct() {
         >
           Se data
         </motion.button>
-      </div>
-    </section>
+      </section>
+    </>
   );
 }
