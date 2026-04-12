@@ -1,137 +1,99 @@
+import { Canvas } from "@react-three/fiber";
+import { useGLTF, OrbitControls } from "@react-three/drei";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef, useEffect } from "react";
+import { useRef } from "react";
+
+function SnowStick() {
+  const { scene } = useGLTF(
+    "https://xonbkazvfxllffjbqfdm.supabase.co/storage/v1/object/public/models/snowstick1.glb"
+  );
+  return <primitive object={scene} scale={1.5} />;
+}
 
 export default function HeroProduct() {
-  // 🎯 refs
-  const sectionRef = useRef(null);
-  const videoRef = useRef(null);
-
-  // 📜 scroll progress
+  const ref = useRef(null);
   const { scrollYProgress } = useScroll({
-    target: sectionRef,
+    target: ref,
     offset: ["start start", "end end"],
   });
 
-  // 🎥 scroll → video sync (APPLE STYLE)
-  useEffect(() => {
-    const video = videoRef.current;
-
-    const unsubscribe = scrollYProgress.on("change", (progress) => {
-      if (video && video.duration) {
-        video.currentTime = progress * video.duration;
-      }
-    });
-
-    return () => unsubscribe();
-  }, [scrollYProgress]);
-
-  // 🎨 TEXT TIMING
-  const text1Opacity = useTransform(scrollYProgress, [0.1, 0.2], [0, 1]);
-  const text2Opacity = useTransform(scrollYProgress, [0.25, 0.35], [0, 1]);
-  const dataOpacity = useTransform(scrollYProgress, [0.4, 0.55], [0, 1]);
-
-  // 🔵 färgskifte
-  const textColor = useTransform(
-    scrollYProgress,
-    [0.3, 0.5],
-    ["#cccccc", "#60a5fa"]
-  );
+  // Fade controls
+  const videoOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0.3]);
+  const textOpacity = useTransform(scrollYProgress, [0.2, 0.4], [0, 1]);
+  const infoOpacity = useTransform(scrollYProgress, [0.4, 0.6], [0, 1]);
+  const modelOpacity = useTransform(scrollYProgress, [0.65, 0.85], [0, 1]);
 
   return (
-    <>
-      <section
-        ref={sectionRef}
-        style={{
-          position: "relative",
-          height: "200vh",
-        }}
-      >
-        {/* 🎥 VIDEO */}
-        <video
-          ref={videoRef}
+    <div ref={ref} className="bg-black text-white">
+
+      {/* ===== VIDEO SECTION ===== */}
+      <section className="h-screen w-full sticky top-0 overflow-hidden">
+        <motion.video
+          autoPlay
+          loop
           muted
           playsInline
-          preload="auto"
-          style={{
-            position: "absolute",
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-          }}
+          style={{ opacity: videoOpacity }}
+          className="absolute w-full h-full object-cover"
         >
           <source
-            src="https://xonbkazvfxllffjbqfdm.supabase.co/storage/v1/object/sign/videos/Videoprojekt%203.mp4?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV83NmFmNGE4OC1jMDQxLTQyMzMtYWNmZC0wZTEwZTgzODAyOTEiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJ2aWRlb3MvVmlkZW9wcm9qZWt0IDMubXA0IiwiaWF0IjoxNzc1OTk1NDY1LCJleHAiOjQ4OTgwNTk0NjV9.rfyuilFGi1zdFJQeqjBy34KNidRG2ghnB81M9oAcp6Y"
+            src="https://xonbkazvfxllffjbqfdm.supabase.co/storage/v1/object/sign/videos/Videoprojekt%203.mp4?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV83NmFmNGE4OC1jMDQxLTQyMzMtYWNmZC0wZTEwZTgzODAyOTEiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJ2aWRlb3MvVmlkZW9wcm9qZWt0IDMubXA0IiwiaWF0IjoxNzc1OTk1Nzc1LCJleHAiOjQ4OTgwNTk3NzV9.WApkgYEwczioPXb9Iv-K0UYLuMXpn0tg_ifloFTIpek"
             type="video/mp4"
           />
-        </video>
+        </motion.video>
 
-        {/* 🌑 OVERLAY */}
-        <div
-          style={{
-            position: "absolute",
-            width: "100%",
-            height: "100%",
-            background: "rgba(0,0,0,0.4)",
-          }}
-        />
-
-        {/* 🧠 CONTENT */}
-        <div
-          style={{
-            position: "sticky",
-            top: 0,
-            height: "100vh",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            textAlign: "center",
-            color: "white",
-            padding: "20px",
-          }}
+        {/* TEXT OVER VIDEO */}
+        <motion.div
+          style={{ opacity: textOpacity }}
+          className="absolute inset-0 flex items-center justify-center text-center px-6"
         >
-          {/* TEXT 1 */}
-          <motion.h1
-            style={{
-              opacity: text1Opacity,
-              color: textColor,
-              fontSize: "48px",
-              maxWidth: "800px",
-              marginBottom: "20px",
-            }}
-          >
-            Vägar fryser snabbare än du tror.
-          </motion.h1>
-
-          {/* TEXT 2 */}
-          <motion.p
-            style={{
-              opacity: text2Opacity,
-              color: "#ccc",
-              maxWidth: "600px",
-              fontSize: "18px",
-            }}
-          >
-            Varje vinter sker tusentals olyckor på grund av halka.
-          </motion.p>
-
-          {/* DATA */}
-          <motion.div
-            style={{
-              opacity: dataOpacity,
-              marginTop: "40px",
-              color: "#60a5fa",
-            }}
-          >
-            <h2 style={{ fontSize: "42px" }}>
-              ~15 000 olyckor / år
-            </h2>
-            <p style={{ color: "#aaa" }}>
-              Hundratals skadade varje vinter
-            </p>
-          </motion.div>
-        </div>
+          <h1 className="text-5xl md:text-7xl font-semibold text-blue-400">
+            Vintervägar dödar.
+          </h1>
+        </motion.div>
       </section>
-    </>
+
+      {/* ===== INFO SECTION ===== */}
+      <section className="h-screen flex items-center justify-center px-6">
+        <motion.div
+          style={{ opacity: infoOpacity }}
+          className="max-w-3xl text-center"
+        >
+          <h2 className="text-4xl md:text-6xl font-semibold text-blue-400 mb-6">
+            Över 1000 olyckor varje vinter
+          </h2>
+          <p className="text-lg text-gray-300">
+            Halkolyckor orsakar varje år tusentals skador. 
+            Is, snö och dålig sikt gör vägar farliga – 
+            och reaktionstiden blir avgörande.
+          </p>
+        </motion.div>
+      </section>
+
+      {/* ===== TRANSITION TEXT ===== */}
+      <section className="h-screen flex items-center justify-center">
+        <h2 className="text-5xl md:text-7xl font-semibold text-blue-400 text-center">
+          En lösning.
+        </h2>
+      </section>
+
+      {/* ===== 3D MODEL SECTION ===== */}
+      <section className="h-screen w-full sticky top-0">
+        <motion.div
+          style={{ opacity: modelOpacity }}
+          className="w-full h-full"
+        >
+          <Canvas camera={{ position: [0, 0, 5], fov: 50 }}>
+            <ambientLight intensity={1} />
+            <directionalLight position={[2, 2, 2]} />
+            <SnowStick />
+            <OrbitControls enableZoom={false} />
+          </Canvas>
+        </motion.div>
+      </section>
+
+      {/* EXTRA SPACE FOR SCROLL */}
+      <div className="h-[100vh]" />
+    </div>
   );
 }
