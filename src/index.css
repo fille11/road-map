@@ -1,111 +1,461 @@
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+  --background: #000000;
+  --foreground: #ffffff;
+  --muted: #86868b;
+  --accent: #2997ff;
+  --accent-light: #64d2ff;
+  --accent-dark: #0071e3;
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
-
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
+  --sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
-}
-
-body {
+* {
   margin: 0;
-}
-
-#root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
+  padding: 0;
   box-sizing: border-box;
 }
 
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
+html {
+  scroll-behavior: auto;
 }
 
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
+body {
+  font-family: var(--sans);
+  background: var(--background);
+  color: var(--foreground);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  text-rendering: optimizeLegibility;
 }
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
-}
-p {
+
+#root {
+  width: 100%;
+  max-width: 100%;
   margin: 0;
+  border: none;
+  text-align: left;
 }
 
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
+/* Landing Container */
+.landing-container {
+  width: 100%;
+  min-height: 100vh;
+  background: var(--background);
 }
 
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
+/* ========================================
+   HERO SECTION - Apple-style Sticky Video
+   ======================================== */
+.hero-section {
+  position: relative;
+  height: 450vh; /* Extended for smoother transitions */
+}
+
+.video-container {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  will-change: transform;
+}
+
+.hero-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  will-change: transform, filter;
+  transform-origin: center center;
+}
+
+.video-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.1) 0%,
+    rgba(0, 0, 0, 0.3) 50%,
+    rgba(0, 0, 0, 0.5) 100%
+  );
+  pointer-events: none;
+  will-change: opacity;
+}
+
+/* Black overlay for text knockout effect */
+.mask-overlay {
+  position: absolute;
+  inset: 0;
+  background: var(--background);
+  pointer-events: none;
+  will-change: opacity;
+  mix-blend-mode: normal;
+}
+
+.hero-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  z-index: 10;
+}
+
+.mask-text-wrapper {
+  text-align: center;
+  padding: 0 24px;
+  will-change: transform, opacity;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  transform-style: preserve-3d;
+}
+
+.mask-text {
+  font-size: clamp(72px, 18vw, 200px);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 0.88;
+  color: #000000;
+  text-transform: uppercase;
+  will-change: letter-spacing;
+}
+
+.hero-subtitle-masked {
+  font-size: clamp(14px, 2vw, 22px);
+  font-weight: 400;
+  color: #555555;
+  letter-spacing: 0.15em;
+  margin-top: 48px;
+  text-transform: uppercase;
+}
+
+/* Scroll indicator */
+.scroll-indicator {
+  position: absolute;
+  bottom: 48px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  z-index: 20;
+}
+
+.scroll-line {
+  width: 1px;
+  height: 48px;
+  background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.5), transparent);
+  animation: scrollPulse 2s ease-in-out infinite;
+}
+
+@keyframes scrollPulse {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scaleY(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+}
+
+.scroll-text {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 500;
+}
+
+/* ========================================
+   PRODUCT SECTION - Apple-style Text Reveals
+   ======================================== */
+.product-section {
+  position: relative;
+  min-height: 450vh; /* Extended for breathing room */
+  background: var(--background);
+  z-index: 20;
+}
+
+.product-bg-gradient {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    ellipse 80% 50% at 50% 50%,
+    rgba(41, 151, 255, 0.04) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.product-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 50vh;
+  padding-bottom: 50vh;
+  z-index: 1;
+}
+
+.product-block {
+  height: 100vh;
+  width: 100%;
+  max-width: 1000px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 40px;
+  will-change: transform, opacity, filter;
+  transform-style: preserve-3d;
+}
+
+.product-eyebrow {
+  display: inline-block;
+  font-size: clamp(12px, 1.5vw, 14px);
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 20px;
+}
+
+.product-title {
+  font-size: clamp(40px, 8vw, 80px);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  margin-bottom: 28px;
+  color: var(--foreground);
+  line-height: 1.05;
+  text-wrap: balance;
+}
+
+.product-description {
+  font-size: clamp(18px, 2.5vw, 26px);
+  line-height: 1.5;
+  color: var(--muted);
+  max-width: 720px;
+  margin: 0 auto;
+  font-weight: 400;
+  text-wrap: balance;
+}
+
+/* ========================================
+   MODEL SECTION - 3D Showcase (Apple-style)
+   ======================================== */
+.model-section-3d {
+  position: relative;
+  height: 350vh; /* Extended for smoother animation */
+  background: var(--background);
+  z-index: 20;
+}
+
+.model-sticky-container {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.model-canvas-wrapper {
+  position: relative;
+  width: 100%;
+  height: 65vh;
+  max-width: 900px;
+  will-change: transform, opacity;
+}
+
+.model-canvas-wrapper canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.model-glow-bg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(
+    circle,
+    rgba(41, 151, 255, 0.12) 0%,
+    rgba(41, 151, 255, 0.04) 40%,
+    transparent 70%
+  );
+  transform: translate(-50%, -50%);
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.model-text-content {
+  text-align: center;
+  max-width: 720px;
+  padding: 0 32px;
+  margin-top: 48px;
+}
+
+.model-3d-title {
+  font-size: clamp(40px, 8vw, 72px);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  margin-bottom: 24px;
+  color: var(--foreground);
+  line-height: 1.08;
+  will-change: transform, opacity;
+  text-wrap: balance;
+}
+
+.model-3d-description {
+  font-size: clamp(18px, 2.2vw, 24px);
+  color: var(--muted);
+  line-height: 1.55;
+  font-weight: 400;
+  will-change: transform, opacity;
+  text-wrap: balance;
+}
+
+/* Temperature display overlay */
+.temperature-display {
+  position: absolute;
+  bottom: 12%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 14px 28px;
+  border-radius: 100px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  z-index: 10;
+}
+
+.temp-value {
+  font-size: clamp(22px, 3.5vw, 32px);
+  font-weight: 600;
+  color: #00aaff;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.temp-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ff6b00;
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.temp-indicator.blue-active {
+  background: #00aaff;
+  box-shadow: 0 0 16px rgba(0, 170, 255, 0.7);
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+@media (max-width: 768px) {
+  .hero-section {
+    height: 380vh;
+  }
+
+  .mask-text {
+    line-height: 0.9;
+  }
+
+  .hero-subtitle-masked {
+    margin-top: 32px;
+  }
+
+  .scroll-indicator {
+    bottom: 32px;
+  }
+
+  .product-section {
+    min-height: 380vh;
+  }
+
+  .product-content {
+    padding-top: 40vh;
+    padding-bottom: 40vh;
+  }
+
+  .product-block {
+    height: 90vh;
+    padding: 0 28px;
+  }
+
+  .model-section-3d {
+    height: 280vh;
+  }
+
+  .model-canvas-wrapper {
+    height: 55vh;
+  }
+
+  .model-text-content {
+    margin-top: 32px;
+    padding: 0 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-section {
+    height: 320vh;
+  }
+
+  .hero-subtitle-masked {
+    margin-top: 24px;
+    letter-spacing: 0.1em;
+  }
+
+  .product-section {
+    min-height: 320vh;
+  }
+
+  .product-block {
+    height: 85vh;
+    padding: 0 20px;
+  }
+
+  .product-eyebrow {
+    margin-bottom: 16px;
+  }
+
+  .model-section-3d {
+    height: 220vh;
+  }
+
+  .model-canvas-wrapper {
+    height: 50vh;
+  }
+
+  .temperature-display {
+    padding: 10px 20px;
+    gap: 10px;
+  }
 }

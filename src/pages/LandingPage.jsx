@@ -1,5 +1,13 @@
-import HeroProduct from "../components/HeroProduct";
+import HeroSection from "../components/HeroSection";
+import ProductSection from "../components/ProductSection";
+import ModelSection from "../components/ModelSection";
 
 export default function LandingPage() {
-  return <HeroProduct />;
+  return (
+    <div className="landing-container">
+      <HeroSection />
+      <ProductSection />
+      <ModelSection />
+    </div>
+  );
 }
