@@ -1,13 +1,12 @@
 :root {
-  --background: #0a0a0f;
+  --background: #000000;
   --foreground: #ffffff;
-  --muted: #71717a;
-  --accent: #3b82f6;
-  --accent-light: #60a5fa;
-  --accent-dark: #1d4ed8;
+  --muted: #8e8e93;
+  --accent: #2997ff;
+  --accent-light: #64b5ff;
+  --accent-dark: #0071e3;
 
   --sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
-  --heading: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
 }
 
 * {
@@ -17,7 +16,7 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
 }
 
 body {
@@ -41,12 +40,15 @@ body {
 .landing-container {
   width: 100%;
   min-height: 100vh;
+  background: var(--background);
 }
 
-/* Hero Section */
+/* ========================================
+   HERO SECTION - Sticky Video with Text
+   ======================================== */
 .hero-section {
   position: relative;
-  height: 300vh;
+  height: 400vh; /* Extended for more scroll room */
 }
 
 .video-container {
@@ -55,12 +57,14 @@ body {
   width: 100%;
   height: 100vh;
   overflow: hidden;
+  will-change: transform;
 }
 
 .hero-video {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  will-change: transform;
 }
 
 .video-overlay {
@@ -68,11 +72,12 @@ body {
   inset: 0;
   background: linear-gradient(
     to bottom,
-    rgba(10, 10, 15, 0.3) 0%,
-    rgba(10, 10, 15, 0.5) 50%,
-    rgba(10, 10, 15, 0.8) 100%
+    rgba(0, 0, 0, 0.2) 0%,
+    rgba(0, 0, 0, 0.4) 40%,
+    rgba(0, 0, 0, 0.7) 100%
   );
   pointer-events: none;
+  will-change: opacity;
 }
 
 .hero-content {
@@ -91,34 +96,42 @@ body {
 .hero-text-wrapper {
   text-align: center;
   padding: 0 24px;
+  will-change: transform, opacity;
 }
 
 .hero-title {
-  font-size: clamp(48px, 12vw, 120px);
+  font-size: clamp(56px, 14vw, 140px);
   font-weight: 700;
-  letter-spacing: -0.03em;
-  line-height: 1;
-  margin-bottom: 24px;
+  letter-spacing: -0.04em;
+  line-height: 0.95;
+  margin-bottom: 28px;
 }
 
 .gradient-text {
-  background: linear-gradient(135deg, var(--accent-light) 0%, var(--accent) 50%, var(--accent-dark) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--accent-light) 0%,
+    var(--accent) 40%,
+    var(--accent-dark) 100%
+  );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .hero-subtitle {
-  font-size: clamp(18px, 3vw, 28px);
+  font-size: clamp(18px, 3vw, 32px);
   font-weight: 400;
   color: var(--muted);
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
 }
 
-/* Product Section */
+/* ========================================
+   PRODUCT SECTION - Text Reveals
+   ======================================== */
 .product-section {
   position: relative;
-  min-height: 300vh;
+  min-height: 400vh; /* Extended for breathing room */
   background: var(--background);
   z-index: 20;
 }
@@ -127,71 +140,85 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 100vh;
-  padding: 50vh 24px;
+  justify-content: flex-start;
+  padding-top: 50vh;
+  padding-bottom: 50vh;
 }
 
 .product-block {
-  max-width: 800px;
+  height: 100vh;
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
-  padding: 60px 40px;
+  padding: 0 32px;
+  will-change: transform, opacity;
 }
 
 .product-title {
-  font-size: clamp(32px, 6vw, 64px);
+  font-size: clamp(36px, 7vw, 72px);
   font-weight: 600;
-  letter-spacing: -0.02em;
-  margin-bottom: 24px;
+  letter-spacing: -0.03em;
+  margin-bottom: 28px;
   color: var(--foreground);
+  line-height: 1.05;
 }
 
 .product-description {
-  font-size: clamp(16px, 2.5vw, 22px);
-  line-height: 1.6;
+  font-size: clamp(17px, 2.5vw, 24px);
+  line-height: 1.5;
   color: var(--muted);
-  max-width: 600px;
+  max-width: 680px;
   margin: 0 auto;
+  font-weight: 400;
 }
 
-/* Model Section */
+/* ========================================
+   MODEL SECTION - 3D Showcase
+   ======================================== */
 .model-section {
   position: relative;
-  min-height: 100vh;
+  min-height: 200vh; /* Extended for smooth reveal */
   background: var(--background);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 120px 24px;
+  padding: 20vh 24px;
   z-index: 20;
 }
 
 .model-container {
   width: 100%;
-  max-width: 800px;
+  max-width: 900px;
   aspect-ratio: 16 / 10;
-  perspective: 1000px;
-  margin-bottom: 60px;
+  perspective: 1200px;
+  margin-bottom: 80px;
+  will-change: transform, opacity;
 }
 
 .model-placeholder {
   width: 100%;
   height: 100%;
   background: linear-gradient(
-    145deg,
-    rgba(59, 130, 246, 0.1) 0%,
-    rgba(59, 130, 246, 0.05) 50%,
-    rgba(29, 78, 216, 0.1) 100%
+    160deg,
+    rgba(41, 151, 255, 0.08) 0%,
+    rgba(41, 151, 255, 0.03) 40%,
+    rgba(0, 113, 227, 0.08) 100%
   );
-  border: 1px solid rgba(59, 130, 246, 0.2);
-  border-radius: 24px;
+  border: 1px solid rgba(41, 151, 255, 0.15);
+  border-radius: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   overflow: hidden;
   transform-style: preserve-3d;
+  will-change: transform;
+  backdrop-filter: blur(20px);
 }
 
 .model-inner {
@@ -203,57 +230,110 @@ body {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 300px;
-  height: 300px;
-  background: radial-gradient(circle, rgba(59, 130, 246, 0.3) 0%, transparent 70%);
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(
+    circle,
+    rgba(41, 151, 255, 0.25) 0%,
+    rgba(41, 151, 255, 0.08) 40%,
+    transparent 70%
+  );
   transform: translate(-50%, -50%);
-  filter: blur(60px);
+  filter: blur(80px);
+  animation: pulse 4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.1);
+    opacity: 0.8;
+  }
 }
 
 .model-label {
   display: block;
-  font-size: clamp(24px, 4vw, 36px);
+  font-size: clamp(28px, 5vw, 44px);
   font-weight: 600;
   color: var(--foreground);
-  margin-bottom: 8px;
+  margin-bottom: 12px;
+  letter-spacing: -0.02em;
 }
 
 .model-sublabel {
-  font-size: clamp(14px, 2vw, 18px);
+  font-size: clamp(15px, 2vw, 20px);
   color: var(--muted);
+  font-weight: 400;
 }
 
 .model-info {
   text-align: center;
-  max-width: 600px;
+  max-width: 680px;
+  will-change: transform, opacity;
 }
 
 .model-title {
-  font-size: clamp(28px, 5vw, 48px);
+  font-size: clamp(32px, 6vw, 56px);
   font-weight: 600;
-  letter-spacing: -0.02em;
-  margin-bottom: 16px;
+  letter-spacing: -0.03em;
+  margin-bottom: 20px;
   color: var(--foreground);
+  line-height: 1.1;
 }
 
 .model-description {
-  font-size: clamp(16px, 2vw, 20px);
+  font-size: clamp(17px, 2.2vw, 22px);
   color: var(--muted);
-  line-height: 1.6;
+  line-height: 1.5;
+  font-weight: 400;
 }
 
-/* Responsive */
+/* ========================================
+   RESPONSIVE
+   ======================================== */
 @media (max-width: 768px) {
+  .hero-section {
+    height: 350vh;
+  }
+
+  .product-section {
+    min-height: 350vh;
+  }
+
   .product-content {
-    gap: 80vh;
-    padding: 40vh 20px;
+    padding-top: 40vh;
+    padding-bottom: 40vh;
   }
 
   .product-block {
-    padding: 40px 20px;
+    height: 90vh;
+    padding: 0 24px;
   }
 
   .model-section {
-    padding: 80px 20px;
+    min-height: 150vh;
+    padding: 15vh 20px;
+  }
+
+  .model-container {
+    margin-bottom: 60px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-section {
+    height: 300vh;
+  }
+
+  .product-section {
+    min-height: 300vh;
+  }
+
+  .product-block {
+    height: 80vh;
+    padding: 0 20px;
   }
 }
