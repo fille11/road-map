@@ -9,105 +9,129 @@ export default function HeroSection() {
     offset: ["start start", "end start"],
   });
 
-  // Smooth spring physics for premium feel
+  // Ultra-smooth spring physics for Apple-like feel
   const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 50,
-    damping: 20,
-    restDelta: 0.001,
+    stiffness: 40,
+    damping: 30,
+    restDelta: 0.0001,
   });
 
-  // Phase 1 (0-0.4): Video plays fullscreen, text not visible yet
-  // Phase 2 (0.4-0.7): Video masks into the text, overlay darkens
-  // Phase 3 (0.7-1): Text with video inside fades out, transitions to next section
+  // Phase 1 (0-0.3): Video plays fullscreen with subtle zoom
+  // Phase 2 (0.3-0.5): Text fades in beautifully
+  // Phase 3 (0.5-0.8): Text holds with video inside
+  // Phase 4 (0.8-1): Everything fades out elegantly
 
-  // Mask text opacity - fades in during transition
+  // Mask text opacity with longer hold time
   const maskTextOpacity = useTransform(
     smoothProgress,
-    [0, 0.25, 0.4, 0.7, 0.85],
+    [0, 0.2, 0.35, 0.65, 0.85],
     [0, 0, 1, 1, 0]
   );
 
-  // Scale of the mask text container
+  // Scale animation - starts smaller, scales up smoothly
   const maskTextScale = useTransform(
     smoothProgress,
-    [0, 0.25, 0.4, 0.7, 0.85],
-    [0.9, 0.9, 1, 1, 1.05]
+    [0, 0.2, 0.35, 0.65, 0.85],
+    [0.85, 0.85, 1, 1.02, 1.08]
   );
 
-  // Y position of the mask text
+  // Y position with elegant ease
   const maskTextY = useTransform(
     smoothProgress,
-    [0, 0.25, 0.4, 0.7, 0.85],
-    [50, 50, 0, 0, -80]
+    [0, 0.2, 0.35, 0.65, 0.85],
+    [80, 80, 0, 0, -100]
   );
 
-  // Black overlay that covers the video OUTSIDE the text
-  // Starts transparent, becomes fully opaque during mask phase
+  // Letter spacing animation for premium feel
+  const letterSpacing = useTransform(
+    smoothProgress,
+    [0, 0.2, 0.35, 0.65],
+    [-8, -8, -4, -2]
+  );
+
+  // Black overlay for video knockout effect
   const blackOverlayOpacity = useTransform(
     smoothProgress,
-    [0, 0.25, 0.5, 0.7],
+    [0, 0.2, 0.45, 0.7],
     [0, 0, 1, 1]
   );
 
-  // Subtle video zoom for cinematic depth
+  // Cinematic video zoom
   const videoScale = useTransform(
     smoothProgress,
     [0, 1],
-    [1, 1.2]
+    [1, 1.3]
   );
 
-  // Initial dark overlay on video (for readability)
+  // Video brightness dims as we scroll
+  const videoBrightness = useTransform(
+    smoothProgress,
+    [0, 0.5, 0.8],
+    [1, 0.9, 0.7]
+  );
+
+  // Initial overlay
   const initialOverlayOpacity = useTransform(
     smoothProgress,
-    [0, 0.3, 0.5],
-    [0.25, 0.25, 0]
+    [0, 0.25, 0.45],
+    [0.15, 0.15, 0]
   );
 
-  // Subtitle opacity
+  // Subtitle with staggered timing
   const subtitleOpacity = useTransform(
     smoothProgress,
-    [0, 0.35, 0.45, 0.65, 0.8],
+    [0, 0.32, 0.42, 0.6, 0.8],
     [0, 0, 1, 1, 0]
   );
 
   const subtitleY = useTransform(
     smoothProgress,
-    [0, 0.35, 0.45, 0.65, 0.8],
-    [20, 20, 0, 0, -30]
+    [0, 0.32, 0.42, 0.6, 0.8],
+    [30, 30, 0, 0, -40]
+  );
+
+  // Scroll indicator
+  const scrollIndicatorOpacity = useTransform(
+    smoothProgress,
+    [0, 0.08, 0.15],
+    [1, 1, 0]
   );
 
   return (
     <section ref={sectionRef} className="hero-section">
-      {/* Sticky container that stays fixed while scrolling */}
+      {/* Sticky container */}
       <div className="video-container">
-        {/* Base video layer */}
+        {/* Video with cinematic zoom and brightness */}
         <motion.video
           autoPlay
           muted
           loop
           playsInline
           className="hero-video"
-          style={{ scale: videoScale }}
+          style={{ 
+            scale: videoScale,
+            filter: useTransform(videoBrightness, (v) => `brightness(${v})`)
+          }}
         >
           <source
-            src="https://videos.pexels.com/video-files/855207/855207-hd_1920_1080_30fps.mp4"
+            src="https://xonbkazvfxllffjbqfdm.supabase.co/storage/v1/object/public/videos/Videoprojekt%203.mp4"
             type="video/mp4"
           />
         </motion.video>
 
-        {/* Initial subtle overlay for better contrast */}
+        {/* Subtle initial overlay */}
         <motion.div
           className="video-overlay"
           style={{ opacity: initialOverlayOpacity }}
         />
 
-        {/* Black overlay that reveals video only through text */}
+        {/* Black overlay for text knockout */}
         <motion.div
           className="mask-overlay"
           style={{ opacity: blackOverlayOpacity }}
         />
 
-        {/* Text with video visible inside (using mix-blend-mode) */}
+        {/* Text with video visible inside */}
         <div className="hero-content">
           <motion.div
             className="mask-text-wrapper"
@@ -117,9 +141,18 @@ export default function HeroSection() {
               y: maskTextY,
             }}
           >
-            {/* This creates the knockout effect - white text that reveals video underneath */}
-            <h1 className="mask-text">THE ROAD</h1>
-            <h1 className="mask-text">AHEAD</h1>
+            <motion.h1 
+              className="mask-text"
+              style={{ letterSpacing }}
+            >
+              THE ROAD
+            </motion.h1>
+            <motion.h1 
+              className="mask-text"
+              style={{ letterSpacing }}
+            >
+              AHEAD
+            </motion.h1>
           </motion.div>
 
           <motion.p
@@ -132,6 +165,15 @@ export default function HeroSection() {
             Experience the journey like never before
           </motion.p>
         </div>
+
+        {/* Scroll indicator */}
+        <motion.div 
+          className="scroll-indicator"
+          style={{ opacity: scrollIndicatorOpacity }}
+        >
+          <div className="scroll-line" />
+          <span className="scroll-text">Scroll</span>
+        </motion.div>
       </div>
     </section>
   );
