@@ -1,89 +1,14 @@
 import { useRef, Suspense, useMemo } from "react";
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { useGLTF, Environment, Text } from "@react-three/drei";
+import { Canvas, useFrame, useThree, useLoader } from "@react-three/fiber";
+import { useGLTF, Environment } from "@react-three/drei";
 import * as THREE from "three";
-
-const MODEL_URL = "https://xonbkazvfxllffjbqfdm.supabase.co/storage/v1/object/public/models/snowstick1.glb";
-
-// Snowstorm particle system
-function Snowstorm({ scrollProgress }) {
-  const particlesRef = useRef();
-  const particleCount = 800;
-  
-  const particles = useMemo(() => {
-    const positions = new Float32Array(particleCount * 3);
-    const velocities = new Float32Array(particleCount * 3);
-    
-    for (let i = 0; i < particleCount; i++) {
-      positions[i * 3] = (Math.random() - 0.5) * 30;
-      positions[i * 3 + 1] = Math.random() * 15 - 2;
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 30;
-      
-      velocities[i * 3] = (Math.random() - 0.5) * 0.02;
-      velocities[i * 3 + 1] = -0.02 - Math.random() * 0.03;
-      velocities[i * 3 + 2] = (Math.random() - 0.5) * 0.02;
-    }
-    
-    return { positions, velocities };
-  }, []);
-
-  useFrame(() => {
-    if (particlesRef.current) {
-      const progress = scrollProgress.get();
-      const intensity = Math.min(progress * 2, 1);
-      
-      const positions = particlesRef.current.geometry.attributes.position.array;
-      
-      for (let i = 0; i < particleCount; i++) {
-        positions[i * 3] += particles.velocities[i * 3] * intensity * 2;
-        positions[i * 3 + 1] += particles.velocities[i * 3 + 1] * intensity * 1.5;
-        positions[i * 3 + 2] += particles.velocities[i * 3 + 2] * intensity * 2;
-        
-        // Wind effect
-        positions[i * 3] += Math.sin(Date.now() * 0.001 + i) * 0.003 * intensity;
-        
-        // Reset particles that fall below
-        if (positions[i * 3 + 1] < -3) {
-          positions[i * 3] = (Math.random() - 0.5) * 30;
-          positions[i * 3 + 1] = 12;
-          positions[i * 3 + 2] = (Math.random() - 0.5) * 30;
-        }
-      }
-      
-      particlesRef.current.geometry.attributes.position.needsUpdate = true;
-      
-      // Fade in snow with scroll
-      particlesRef.current.material.opacity = Math.min(progress * 1.5, 0.8);
-    }
-  });
-
-  return (
-    <points ref={particlesRef}>
-      <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          count={particleCount}
-          array={particles.positions}
-          itemSize={3}
-        />
-      </bufferGeometry>
-      <pointsMaterial
-        color="#ffffff"
-        size={0.08}
-        transparent
-        opacity={0}
-        sizeAttenuation
-        depthWrite={false}
-      />
-    </points>
-  );
-}
 
 // Road plane component
 function Road({ scrollProgress }) {
   const roadRef = useRef();
   
+  // Create road texture pattern
   const roadMaterial = useMemo(() => {
     return new THREE.MeshStandardMaterial({
       color: "#1a1a1a",
@@ -92,6 +17,7 @@ function Road({ scrollProgress }) {
     });
   }, []);
 
+  // Create road markings
   const markingMaterial = useMemo(() => {
     return new THREE.MeshStandardMaterial({
       color: "#ffffff",
@@ -105,6 +31,7 @@ function Road({ scrollProgress }) {
   useFrame(() => {
     if (roadRef.current) {
       const progress = scrollProgress.get();
+      // Slight perspective shift as pole lifts
       roadRef.current.rotation.x = THREE.MathUtils.lerp(-Math.PI / 2.2, -Math.PI / 2.5, progress);
       roadRef.current.position.y = THREE.MathUtils.lerp(-2.5, -3.5, progress);
       roadRef.current.position.z = THREE.MathUtils.lerp(0, -2, progress);
@@ -113,174 +40,78 @@ function Road({ scrollProgress }) {
 
   return (
     <group ref={roadRef} rotation={[-Math.PI / 2.2, 0, 0]} position={[0, -2.5, 0]}>
+      {/* Main road surface */}
       <mesh receiveShadow>
-        <planeGeometry args={[12, 40]} />
+        <planeGeometry args={[12, 30]} />
         <primitive object={roadMaterial} attach="material" />
       </mesh>
       
-      {Array.from({ length: 12 }).map((_, i) => (
-        <mesh key={i} position={[0, -18 + i * 3.5, 0.01]}>
+      {/* Center line markings */}
+      {Array.from({ length: 8 }).map((_, i) => (
+        <mesh key={i} position={[0, -12 + i * 3.5, 0.01]}>
           <planeGeometry args={[0.15, 2]} />
           <primitive object={markingMaterial} attach="material" />
         </mesh>
       ))}
       
+      {/* Edge lines */}
       <mesh position={[-5, 0, 0.01]}>
-        <planeGeometry args={[0.1, 40]} />
+        <planeGeometry args={[0.1, 30]} />
         <primitive object={markingMaterial} attach="material" />
       </mesh>
       <mesh position={[5, 0, 0.01]}>
-        <planeGeometry args={[0.1, 40]} />
+        <planeGeometry args={[0.1, 30]} />
         <primitive object={markingMaterial} attach="material" />
       </mesh>
       
-      <mesh position={[-7, 0, 0.02]}>
-        <planeGeometry args={[4, 40]} />
-        <meshStandardMaterial color="#d8d8d8" roughness={1} />
+      {/* Snow on road edges */}
+      <mesh position={[-6.5, 0, 0.02]}>
+        <planeGeometry args={[3, 30]} />
+        <meshStandardMaterial color="#e8e8e8" roughness={1} />
       </mesh>
-      <mesh position={[7, 0, 0.02]}>
-        <planeGeometry args={[4, 40]} />
-        <meshStandardMaterial color="#d8d8d8" roughness={1} />
+      <mesh position={[6.5, 0, 0.02]}>
+        <planeGeometry args={[3, 30]} />
+        <meshStandardMaterial color="#e8e8e8" roughness={1} />
       </mesh>
     </group>
   );
 }
 
-// Static snow pole on side of road
-function StaticSnowPole({ position, rotation = 0, scale = 1.8 }) {
-  const { scene } = useGLTF(MODEL_URL);
-  const clonedScene = useMemo(() => scene.clone(), [scene]);
-  
-  return (
-    <primitive
-      object={clonedScene}
-      scale={scale}
-      position={position}
-      rotation={[0, rotation, 0]}
-    />
-  );
-}
-
-// Main snow pole with pull-up animation and color change
-function MainSnowPole({ scrollProgress }) {
+// Snow pole model with pull-up animation
+function SnowPole({ scrollProgress }) {
   const modelRef = useRef();
-  const blueMaterialRef = useRef();
-  const { scene } = useGLTF(MODEL_URL);
+  const { scene } = useGLTF("https://xonbkazvfxllffjbqfdm.supabase.co/storage/v1/object/public/models/snowstick1.glb");
   const clonedScene = useMemo(() => scene.clone(), [scene]);
-  
-  // Find and modify materials for the blue color effect
-  useMemo(() => {
-    clonedScene.traverse((child) => {
-      if (child.isMesh) {
-        child.castShadow = true;
-        child.receiveShadow = true;
-      }
-    });
-  }, [clonedScene]);
   
   useFrame(() => {
     if (modelRef.current) {
       const progress = scrollProgress.get();
       
-      // Pull up animation
+      // Pull up from the road animation
+      // Y position: starts embedded in road (-3), rises up to showcase height (1)
       modelRef.current.position.y = THREE.MathUtils.lerp(-2.5, 1.5, progress);
-      modelRef.current.rotation.y = THREE.MathUtils.lerp(0, Math.PI * 0.15, progress);
-      modelRef.current.rotation.x = THREE.MathUtils.lerp(0.05, -0.02, progress);
       
+      // Slight rotation as it lifts
+      modelRef.current.rotation.y = THREE.MathUtils.lerp(0, Math.PI * 0.15, progress);
+      
+      // Subtle tilt for dynamic feel
+      modelRef.current.rotation.x = THREE.MathUtils.lerp(0.05, -0.02, progress);
+      modelRef.current.rotation.z = THREE.MathUtils.lerp(-0.02, 0.02, progress);
+      
+      // Scale slightly as it rises
       const scale = THREE.MathUtils.lerp(2.2, 2.8, progress);
       modelRef.current.scale.setScalar(scale);
     }
   });
 
   return (
-    <group>
-      <primitive
-        ref={modelRef}
-        object={clonedScene}
-        scale={2.2}
-        position={[0, -2.5, 0]}
-        castShadow
-      />
-      {/* Blue glow effect on top part - appears with scroll */}
-      <BlueGlowEffect scrollProgress={scrollProgress} />
-    </group>
-  );
-}
-
-// Blue glow effect for the top reflective part
-function BlueGlowEffect({ scrollProgress }) {
-  const glowRef = useRef();
-  
-  useFrame(() => {
-    if (glowRef.current) {
-      const progress = scrollProgress.get();
-      
-      // Position follows the main pole
-      const poleY = THREE.MathUtils.lerp(-2.5, 1.5, progress);
-      glowRef.current.position.y = poleY + 2.2; // Offset to top part
-      
-      // Fade in the blue color effect after 60% scroll
-      const blueProgress = Math.max(0, (progress - 0.6) / 0.4);
-      glowRef.current.material.opacity = blueProgress * 0.6;
-      glowRef.current.material.emissiveIntensity = blueProgress * 2;
-      
-      // Scale with pole
-      const scale = THREE.MathUtils.lerp(2.2, 2.8, progress);
-      glowRef.current.scale.set(scale * 0.15, scale * 0.35, scale * 0.15);
-    }
-  });
-
-  return (
-    <mesh ref={glowRef} position={[0, 0, 0]}>
-      <cylinderGeometry args={[1, 1, 1, 16]} />
-      <meshStandardMaterial
-        color="#2997ff"
-        emissive="#2997ff"
-        emissiveIntensity={0}
-        transparent
-        opacity={0}
-        side={THREE.DoubleSide}
-      />
-    </mesh>
-  );
-}
-
-// Temperature text display
-function TemperatureText({ scrollProgress }) {
-  const textRef = useRef();
-  
-  useFrame(() => {
-    if (textRef.current) {
-      const progress = scrollProgress.get();
-      
-      // Position below the pole
-      const poleY = THREE.MathUtils.lerp(-2.5, 1.5, progress);
-      textRef.current.position.y = poleY - 0.8;
-      
-      // Fade in after 70% scroll
-      const textProgress = Math.max(0, (progress - 0.7) / 0.3);
-      textRef.current.material.opacity = textProgress;
-      
-      // Scale with progress
-      const scale = THREE.MathUtils.lerp(0.3, 0.5, progress);
-      textRef.current.scale.setScalar(scale);
-    }
-  });
-
-  return (
-    <Text
-      ref={textRef}
-      position={[0, -2, 0.5]}
-      fontSize={1}
-      color="#2997ff"
-      anchorX="center"
-      anchorY="middle"
-      font="/fonts/Geist-Bold.ttf"
-      material-transparent
-      material-opacity={0}
-    >
-      +2°C
-    </Text>
+    <primitive
+      ref={modelRef}
+      object={clonedScene}
+      scale={2.2}
+      position={[0, -2.5, 0]}
+      castShadow
+    />
   );
 }
 
@@ -294,63 +125,41 @@ function ModelLoader() {
   );
 }
 
-// Scene with all elements
+// Scene with fog and atmosphere
 function Scene({ scrollProgress }) {
   const { scene } = useThree();
   
   useMemo(() => {
-    scene.fog = new THREE.Fog("#0a0a0a", 8, 30);
+    scene.fog = new THREE.Fog("#0a0a0a", 8, 25);
   }, [scene]);
 
   return (
     <>
-      <ambientLight intensity={0.25} />
+      {/* Ambient and key lights */}
+      <ambientLight intensity={0.3} />
       <directionalLight 
         position={[5, 10, 5]} 
-        intensity={1} 
+        intensity={1.2} 
         castShadow
         shadow-mapSize={[1024, 1024]}
       />
-      <directionalLight position={[-5, 5, -5]} intensity={0.3} color="#b4d4ff" />
+      <directionalLight position={[-5, 5, -5]} intensity={0.4} color="#b4d4ff" />
       
+      {/* Accent lighting for dramatic effect */}
       <spotLight
         position={[0, 8, 3]}
         angle={0.4}
         penumbra={1}
-        intensity={0.6}
+        intensity={0.8}
         color="#ffffff"
         castShadow
       />
-      <pointLight position={[3, 3, 2]} intensity={0.4} color="#2997ff" />
-      <pointLight position={[-3, 3, 2]} intensity={0.4} color="#2997ff" />
+      <pointLight position={[3, 2, 2]} intensity={0.3} color="#2997ff" />
+      <pointLight position={[-3, 2, 2]} intensity={0.3} color="#2997ff" />
       
       <Suspense fallback={<ModelLoader />}>
         <Road scrollProgress={scrollProgress} />
-        
-        {/* Multiple static poles along the road sides */}
-        <StaticSnowPole position={[-5.5, -2.5, -8]} rotation={0.1} scale={1.6} />
-        <StaticSnowPole position={[-5.5, -2.5, -4]} rotation={-0.05} scale={1.7} />
-        <StaticSnowPole position={[-5.5, -2.5, 0]} rotation={0.08} scale={1.6} />
-        <StaticSnowPole position={[-5.5, -2.5, 4]} rotation={-0.1} scale={1.65} />
-        <StaticSnowPole position={[-5.5, -2.5, 8]} rotation={0.05} scale={1.7} />
-        <StaticSnowPole position={[-5.5, -2.5, 12]} rotation={-0.08} scale={1.6} />
-        
-        <StaticSnowPole position={[5.5, -2.5, -10]} rotation={-0.08} scale={1.65} />
-        <StaticSnowPole position={[5.5, -2.5, -6]} rotation={0.12} scale={1.7} />
-        <StaticSnowPole position={[5.5, -2.5, -2]} rotation={-0.05} scale={1.6} />
-        <StaticSnowPole position={[5.5, -2.5, 2]} rotation={0.1} scale={1.65} />
-        <StaticSnowPole position={[5.5, -2.5, 6]} rotation={-0.1} scale={1.7} />
-        <StaticSnowPole position={[5.5, -2.5, 10]} rotation={0.05} scale={1.6} />
-        
-        {/* Main pole that rises up */}
-        <MainSnowPole scrollProgress={scrollProgress} />
-        
-        {/* Temperature display */}
-        <TemperatureText scrollProgress={scrollProgress} />
-        
-        {/* Snowstorm effect */}
-        <Snowstorm scrollProgress={scrollProgress} />
-        
+        <SnowPole scrollProgress={scrollProgress} />
         <Environment preset="night" />
       </Suspense>
     </>
@@ -365,12 +174,14 @@ export default function ModelSection() {
     offset: ["start end", "end start"],
   });
 
+  // Smooth spring for cinematic feel
   const smoothProgress = useSpring(scrollYProgress, {
     stiffness: 30,
     damping: 25,
     restDelta: 0.0001,
   });
 
+  // Container fade in
   const containerOpacity = useTransform(
     smoothProgress,
     [0, 0.15, 0.4, 0.85, 1],
@@ -389,6 +200,7 @@ export default function ModelSection() {
     [60, 0, 0]
   );
 
+  // Text animations - appear after pole rises
   const titleOpacity = useTransform(
     smoothProgress,
     [0.35, 0.5, 0.8, 0.95],
@@ -413,6 +225,7 @@ export default function ModelSection() {
     [40, 0]
   );
 
+  // Scroll progress for 3D - map to 0-1 for pull-up animation
   const modelProgress = useTransform(
     smoothProgress,
     [0.1, 0.7],
@@ -431,7 +244,7 @@ export default function ModelSection() {
           }}
         >
           <Canvas
-            camera={{ position: [0, 2, 10], fov: 50 }}
+            camera={{ position: [0, 2, 8], fov: 50 }}
             dpr={[1, 2]}
             shadows
             gl={{ antialias: true, alpha: true }}
@@ -439,6 +252,7 @@ export default function ModelSection() {
             <Scene scrollProgress={modelProgress} />
           </Canvas>
           
+          {/* Subtle glow behind model */}
           <div className="model-glow-bg" />
         </motion.div>
 
@@ -450,7 +264,7 @@ export default function ModelSection() {
               y: titleY,
             }}
           >
-            Smart Temperature Sensing
+            Built for the Elements
           </motion.h2>
           <motion.p
             className="model-3d-description"
@@ -459,8 +273,8 @@ export default function ModelSection() {
               y: descY,
             }}
           >
-            Advanced reflective technology with real-time temperature monitoring.
-            The blue indicator activates above freezing point.
+            Engineered with precision for unmatched performance in any condition.
+            Experience control like never before.
           </motion.p>
         </div>
       </div>
@@ -468,4 +282,5 @@ export default function ModelSection() {
   );
 }
 
-useGLTF.preload(MODEL_URL);
+// Preload the model
+useGLTF.preload("https://xonbkazvfxllffjbqfdm.supabase.co/storage/v1/object/public/models/snowstick1.glb");
