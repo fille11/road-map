@@ -8,16 +8,16 @@ export default function HeroProduct() {
       <section
         style={{
           position: "relative",
-          height: "120vh",
-          overflow: "hidden",
+          height: "150vh",
         }}
       >
-        {/* VIDEO */}
+        {/* 🎥 VIDEO */}
         <video
           autoPlay
           loop
           muted
           playsInline
+          preload="auto"
           style={{
             position: "absolute",
             width: "100%",
@@ -26,22 +26,22 @@ export default function HeroProduct() {
           }}
         >
           <source
-            src="https://res.cloudinary.com/dologmyu6/video/upload/v1775673374/Videoprojekt_21_rreief.mp4"
+            src="https://xonbkazvfxllffjbqfdm.supabase.co/storage/v1/object/sign/videos/191443-890121806_medium.mp4?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV83NmFmNGE4OC1jMDQxLTQyMzMtYWNmZC0wZTEwZTgzODAyOTEiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJ2aWRlb3MvMTkxNDQzLTg5MDEyMTgwNl9tZWRpdW0ubXA0IiwiaWF0IjoxNzc1OTk0OTkxLCJleHAiOjQ4OTgwNTg5OTF9.nXNJwW5nzmlo3HBS8oZ1xXEgHL6VV66TV7ukHHkf2lY"
             type="video/mp4"
           />
         </video>
 
-        {/* DARK OVERLAY */}
+        {/* 🌑 OVERLAY */}
         <div
           style={{
             position: "absolute",
             width: "100%",
             height: "100%",
-            background: "rgba(0,0,0,0.5)",
+            background: "rgba(0,0,0,0.45)",
           }}
         />
 
-        {/* TEXT */}
+        {/* 🧠 CONTENT */}
         <div
           style={{
             position: "sticky",
@@ -56,33 +56,51 @@ export default function HeroProduct() {
             padding: "20px",
           }}
         >
+          {/* TEXT */}
           <motion.h1
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            style={{ fontSize: "48px", marginBottom: "20px" }}
+            style={{
+              fontSize: "48px",
+              marginBottom: "20px",
+              maxWidth: "800px",
+            }}
           >
             Vägar fryser snabbare än du tror.
           </motion.h1>
 
+          {/* SUBTEXT */}
           <motion.p
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
-            style={{ color: "#ccc", maxWidth: "600px" }}
+            transition={{ delay: 0.3 }}
+            style={{
+              color: "#ccc",
+              maxWidth: "600px",
+              fontSize: "18px",
+            }}
           >
-            Tusentals olyckor sker varje vinter på grund av halka.
+            Varje vinter sker tusentals olyckor på grund av halka.
           </motion.p>
 
           {/* DATA */}
           <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ delay: 0.8 }}
-            style={{ marginTop: "30px", color: "#60a5fa" }}
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.6 }}
+            style={{
+              marginTop: "40px",
+              color: "#60a5fa",
+            }}
           >
-            <h2 style={{ fontSize: "40px" }}>~15 000 olyckor / år</h2>
-            <p style={{ color: "#aaa" }}>Flera hundra allvarligt skadade</p>
+            <h2 style={{ fontSize: "42px", marginBottom: "10px" }}>
+              ~15 000 olyckor / år
+            </h2>
+
+            <p style={{ color: "#aaa" }}>
+              Hundratals skadade. Liv förändras – varje vinter.
+            </p>
           </motion.div>
         </div>
       </section>
