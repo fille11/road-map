@@ -1,8 +1,9 @@
 import { Canvas } from "@react-three/fiber";
-import { useGLTF, OrbitControls } from "@react-three/drei";
+import { useGLTF } from "@react-three/drei";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 
+// ===== 3D MODEL =====
 function SnowStick() {
   const { scene } = useGLTF(
     "https://xonbkazvfxllffjbqfdm.supabase.co/storage/v1/object/public/models/snowstick1.glb"
@@ -10,90 +11,82 @@ function SnowStick() {
   return <primitive object={scene} scale={1.5} />;
 }
 
+// ===== MAIN COMPONENT =====
 export default function HeroProduct() {
   const ref = useRef(null);
+
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end end"],
   });
 
-  // Fade controls
-  const videoOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0.3]);
-  const textOpacity = useTransform(scrollYProgress, [0.2, 0.4], [0, 1]);
-  const infoOpacity = useTransform(scrollYProgress, [0.4, 0.6], [0, 1]);
-  const modelOpacity = useTransform(scrollYProgress, [0.65, 0.85], [0, 1]);
+  // ===== ANIMATIONS =====
+  const videoOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0.2]);
+
+  const text1Opacity = useTransform(scrollYProgress, [0.2, 0.35], [0, 1]);
+  const text1Y = useTransform(scrollYProgress, [0.2, 0.35], [50, 0]);
+
+  const text2Opacity = useTransform(scrollYProgress, [0.4, 0.6], [0, 1]);
+  const text2Y = useTransform(scrollYProgress, [0.4, 0.6], [50, 0]);
+
+  const modelOpacity = useTransform(scrollYProgress, [0.65, 0.9], [0, 1]);
 
   return (
-    <div ref={ref} className="bg-black text-white">
+    <div ref={ref} className="h-[300vh] bg-black text-white">
 
-      {/* ===== VIDEO SECTION ===== */}
-      <section className="h-screen w-full sticky top-0 overflow-hidden">
+      {/* ===== STICKY VIEWPORT ===== */}
+      <div className="sticky top-0 h-screen overflow-hidden">
+
+        {/* ===== VIDEO ===== */}
         <motion.video
           autoPlay
           loop
           muted
           playsInline
-          style={{ opacity: videoOpacity }}
           className="absolute w-full h-full object-cover"
+          style={{ opacity: videoOpacity }}
         >
           <source
-            src="https://xonbkazvfxllffjbqfdm.supabase.co/storage/v1/object/sign/videos/Videoprojekt%203.mp4?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV83NmFmNGE4OC1jMDQxLTQyMzMtYWNmZC0wZTEwZTgzODAyOTEiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJ2aWRlb3MvVmlkZW9wcm9qZWt0IDMubXA0IiwiaWF0IjoxNzc1OTk1Nzc1LCJleHAiOjQ4OTgwNTk3NzV9.WApkgYEwczioPXb9Iv-K0UYLuMXpn0tg_ifloFTIpek"
+            src="https://pixabay.com/videos/download/video-191443_medium.mp4"
             type="video/mp4"
           />
         </motion.video>
 
-        {/* TEXT OVER VIDEO */}
+        {/* ===== TEXT 1 ===== */}
         <motion.div
-          style={{ opacity: textOpacity }}
-          className="absolute inset-0 flex items-center justify-center text-center px-6"
+          style={{ opacity: text1Opacity, y: text1Y }}
+          className="absolute inset-0 flex items-center justify-center"
         >
-          <h1 className="text-5xl md:text-7xl font-semibold text-blue-400">
+          <h1 className="text-5xl md:text-7xl font-semibold text-blue-400 text-center">
             Vintervägar dödar.
           </h1>
         </motion.div>
-      </section>
 
-      {/* ===== INFO SECTION ===== */}
-      <section className="h-screen flex items-center justify-center px-6">
+        {/* ===== TEXT 2 ===== */}
         <motion.div
-          style={{ opacity: infoOpacity }}
-          className="max-w-3xl text-center"
+          style={{ opacity: text2Opacity, y: text2Y }}
+          className="absolute inset-0 flex items-center justify-center px-6"
         >
-          <h2 className="text-4xl md:text-6xl font-semibold text-blue-400 mb-6">
-            Över 1000 olyckor varje vinter
-          </h2>
-          <p className="text-lg text-gray-300">
-            Halkolyckor orsakar varje år tusentals skador. 
-            Is, snö och dålig sikt gör vägar farliga – 
+          <p className="text-xl md:text-2xl text-gray-300 text-center max-w-2xl">
+            Över 1000 olyckor varje vinter.  
+            Is, snö och dålig sikt gör vägar livsfarliga –  
             och reaktionstiden blir avgörande.
           </p>
         </motion.div>
-      </section>
 
-      {/* ===== TRANSITION TEXT ===== */}
-      <section className="h-screen flex items-center justify-center">
-        <h2 className="text-5xl md:text-7xl font-semibold text-blue-400 text-center">
-          En lösning.
-        </h2>
-      </section>
-
-      {/* ===== 3D MODEL SECTION ===== */}
-      <section className="h-screen w-full sticky top-0">
+        {/* ===== 3D MODEL ===== */}
         <motion.div
           style={{ opacity: modelOpacity }}
-          className="w-full h-full"
+          className="absolute inset-0"
         >
-          <Canvas camera={{ position: [0, 0, 5], fov: 50 }}>
+          <Canvas camera={{ position: [0, 0, 4], fov: 50 }}>
             <ambientLight intensity={1} />
             <directionalLight position={[2, 2, 2]} />
             <SnowStick />
-            <OrbitControls enableZoom={false} />
           </Canvas>
         </motion.div>
-      </section>
 
-      {/* EXTRA SPACE FOR SCROLL */}
-      <div className="h-[100vh]" />
+      </div>
     </div>
   );
 }
