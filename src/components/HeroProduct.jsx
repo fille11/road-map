@@ -1,20 +1,54 @@
-import { motion } from "framer-motion";
-import SnowStick3D from "./SnowStick3D";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef, useEffect } from "react";
 
 export default function HeroProduct() {
+  // 🎯 refs
+  const sectionRef = useRef(null);
+  const videoRef = useRef(null);
+
+  // 📜 scroll progress
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start start", "end end"],
+  });
+
+  // 🎥 scroll → video sync (APPLE STYLE)
+  useEffect(() => {
+    const video = videoRef.current;
+
+    const unsubscribe = scrollYProgress.on("change", (progress) => {
+      if (video && video.duration) {
+        video.currentTime = progress * video.duration;
+      }
+    });
+
+    return () => unsubscribe();
+  }, [scrollYProgress]);
+
+  // 🎨 TEXT TIMING
+  const text1Opacity = useTransform(scrollYProgress, [0.1, 0.2], [0, 1]);
+  const text2Opacity = useTransform(scrollYProgress, [0.25, 0.35], [0, 1]);
+  const dataOpacity = useTransform(scrollYProgress, [0.4, 0.55], [0, 1]);
+
+  // 🔵 färgskifte
+  const textColor = useTransform(
+    scrollYProgress,
+    [0.3, 0.5],
+    ["#cccccc", "#60a5fa"]
+  );
+
   return (
     <>
-      {/* 🎬 SECTION 1 – VIDEO + EMOTION */}
       <section
+        ref={sectionRef}
         style={{
           position: "relative",
-          height: "150vh",
+          height: "200vh",
         }}
       >
         {/* 🎥 VIDEO */}
         <video
-          autoPlay
-          loop
+          ref={videoRef}
           muted
           playsInline
           preload="auto"
@@ -26,7 +60,7 @@ export default function HeroProduct() {
           }}
         >
           <source
-            src="https://xonbkazvfxllffjbqfdm.supabase.co/storage/v1/object/sign/videos/191443-890121806_medium.mp4?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV83NmFmNGE4OC1jMDQxLTQyMzMtYWNmZC0wZTEwZTgzODAyOTEiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJ2aWRlb3MvMTkxNDQzLTg5MDEyMTgwNl9tZWRpdW0ubXA0IiwiaWF0IjoxNzc1OTk0OTkxLCJleHAiOjQ4OTgwNTg5OTF9.nXNJwW5nzmlo3HBS8oZ1xXEgHL6VV66TV7ukHHkf2lY"
+            src="https://xonbkazvfxllffjbqfdm.supabase.co/storage/v1/object/sign/videos/Videoprojekt%203.mp4?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV83NmFmNGE4OC1jMDQxLTQyMzMtYWNmZC0wZTEwZTgzODAyOTEiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJ2aWRlb3MvVmlkZW9wcm9qZWt0IDMubXA0IiwiaWF0IjoxNzc1OTk1NDY1LCJleHAiOjQ4OTgwNTk0NjV9.rfyuilFGi1zdFJQeqjBy34KNidRG2ghnB81M9oAcp6Y"
             type="video/mp4"
           />
         </video>
@@ -37,7 +71,7 @@ export default function HeroProduct() {
             position: "absolute",
             width: "100%",
             height: "100%",
-            background: "rgba(0,0,0,0.45)",
+            background: "rgba(0,0,0,0.4)",
           }}
         />
 
@@ -51,31 +85,28 @@ export default function HeroProduct() {
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
-            color: "white",
             textAlign: "center",
+            color: "white",
             padding: "20px",
           }}
         >
-          {/* TEXT */}
+          {/* TEXT 1 */}
           <motion.h1
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
             style={{
+              opacity: text1Opacity,
+              color: textColor,
               fontSize: "48px",
-              marginBottom: "20px",
               maxWidth: "800px",
+              marginBottom: "20px",
             }}
           >
             Vägar fryser snabbare än du tror.
           </motion.h1>
 
-          {/* SUBTEXT */}
+          {/* TEXT 2 */}
           <motion.p
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
             style={{
+              opacity: text2Opacity,
               color: "#ccc",
               maxWidth: "600px",
               fontSize: "18px",
@@ -86,118 +117,20 @@ export default function HeroProduct() {
 
           {/* DATA */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.6 }}
             style={{
+              opacity: dataOpacity,
               marginTop: "40px",
               color: "#60a5fa",
             }}
           >
-            <h2 style={{ fontSize: "42px", marginBottom: "10px" }}>
+            <h2 style={{ fontSize: "42px" }}>
               ~15 000 olyckor / år
             </h2>
-
             <p style={{ color: "#aaa" }}>
-              Hundratals skadade. Liv förändras – varje vinter.
+              Hundratals skadade varje vinter
             </p>
           </motion.div>
         </div>
-      </section>
-
-      {/* 📊 SECTION 2 – PROBLEM */}
-      <section
-        style={{
-          height: "100vh",
-          background: "black",
-          color: "white",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          textAlign: "center",
-          padding: "20px",
-        }}
-      >
-        <motion.h2
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ duration: 0.8 }}
-          style={{ fontSize: "40px" }}
-        >
-          Problemet är inte snön.
-          <br />
-          Det är temperaturen.
-        </motion.h2>
-      </section>
-
-      {/* 🧊 SECTION 3 – PRODUKT */}
-      <section
-        style={{
-          height: "120vh",
-          background: "black",
-          color: "white",
-        }}
-      >
-        <div
-          style={{
-            position: "sticky",
-            top: 0,
-            height: "100vh",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "20px",
-          }}
-        >
-          <motion.h2
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            style={{ fontSize: "40px", marginBottom: "40px", textAlign: "center" }}
-          >
-            Vid +2°C reagerar den direkt.
-          </motion.h2>
-
-          {/* 3D MODEL */}
-          <div style={{ width: "400px", height: "400px" }}>
-            <SnowStick3D />
-          </div>
-
-          <motion.p
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            style={{ color: "#aaa", marginTop: "20px", textAlign: "center" }}
-          >
-            En visuell varning direkt på vägen.
-          </motion.p>
-        </div>
-      </section>
-
-      {/* 🚀 SECTION 4 – CTA */}
-      <section
-        style={{
-          height: "100vh",
-          background: "black",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <motion.button
-          whileHover={{ scale: 1.1 }}
-          style={{
-            padding: "15px 30px",
-            fontSize: "18px",
-            background: "#3b82f6",
-            border: "none",
-            borderRadius: "10px",
-            color: "white",
-            cursor: "pointer",
-          }}
-        >
-          Se data
-        </motion.button>
       </section>
     </>
   );
