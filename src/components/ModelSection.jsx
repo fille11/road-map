@@ -1,84 +1,173 @@
-import { useRef, Suspense } from "react";
+import { useRef, Suspense, useMemo } from "react";
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { useGLTF, Environment, Float } from "@react-three/drei";
+import { Canvas, useFrame, useThree, useLoader } from "@react-three/fiber";
+import { useGLTF, Environment } from "@react-three/drei";
 import * as THREE from "three";
 
-// Component that syncs scroll progress to 3D rotation
-function ScrollLinkedModel({ scrollProgress }) {
+// Road plane component
+function Road({ scrollProgress }) {
+  const roadRef = useRef();
+  
+  // Create road texture pattern
+  const roadMaterial = useMemo(() => {
+    return new THREE.MeshStandardMaterial({
+      color: "#1a1a1a",
+      roughness: 0.9,
+      metalness: 0.1,
+    });
+  }, []);
+
+  // Create road markings
+  const markingMaterial = useMemo(() => {
+    return new THREE.MeshStandardMaterial({
+      color: "#ffffff",
+      roughness: 0.5,
+      metalness: 0,
+      emissive: "#ffffff",
+      emissiveIntensity: 0.1,
+    });
+  }, []);
+
+  useFrame(() => {
+    if (roadRef.current) {
+      const progress = scrollProgress.get();
+      // Slight perspective shift as pole lifts
+      roadRef.current.rotation.x = THREE.MathUtils.lerp(-Math.PI / 2.2, -Math.PI / 2.5, progress);
+      roadRef.current.position.y = THREE.MathUtils.lerp(-2.5, -3.5, progress);
+      roadRef.current.position.z = THREE.MathUtils.lerp(0, -2, progress);
+    }
+  });
+
+  return (
+    <group ref={roadRef} rotation={[-Math.PI / 2.2, 0, 0]} position={[0, -2.5, 0]}>
+      {/* Main road surface */}
+      <mesh receiveShadow>
+        <planeGeometry args={[12, 30]} />
+        <primitive object={roadMaterial} attach="material" />
+      </mesh>
+      
+      {/* Center line markings */}
+      {Array.from({ length: 8 }).map((_, i) => (
+        <mesh key={i} position={[0, -12 + i * 3.5, 0.01]}>
+          <planeGeometry args={[0.15, 2]} />
+          <primitive object={markingMaterial} attach="material" />
+        </mesh>
+      ))}
+      
+      {/* Edge lines */}
+      <mesh position={[-5, 0, 0.01]}>
+        <planeGeometry args={[0.1, 30]} />
+        <primitive object={markingMaterial} attach="material" />
+      </mesh>
+      <mesh position={[5, 0, 0.01]}>
+        <planeGeometry args={[0.1, 30]} />
+        <primitive object={markingMaterial} attach="material" />
+      </mesh>
+      
+      {/* Snow on road edges */}
+      <mesh position={[-6.5, 0, 0.02]}>
+        <planeGeometry args={[3, 30]} />
+        <meshStandardMaterial color="#e8e8e8" roughness={1} />
+      </mesh>
+      <mesh position={[6.5, 0, 0.02]}>
+        <planeGeometry args={[3, 30]} />
+        <meshStandardMaterial color="#e8e8e8" roughness={1} />
+      </mesh>
+    </group>
+  );
+}
+
+// Snow pole model with pull-up animation
+function SnowPole({ scrollProgress }) {
   const modelRef = useRef();
-  const { viewport } = useThree();
-  
-  // Load the snow pole model
   const { scene } = useGLTF("https://xonbkazvfxllffjbqfdm.supabase.co/storage/v1/object/public/models/snowstick1.glb");
-  
-  // Clone the scene to avoid mutation issues
-  const clonedScene = scene.clone();
+  const clonedScene = useMemo(() => scene.clone(), [scene]);
   
   useFrame(() => {
     if (modelRef.current) {
       const progress = scrollProgress.get();
       
-      // Apple-style rotation - starts angled, rotates to front view
-      // Rotation from -45deg to 15deg on Y axis
-      modelRef.current.rotation.y = THREE.MathUtils.lerp(
-        -Math.PI / 4,  // -45 degrees (angled)
-        Math.PI / 12,  // 15 degrees (slight angle for depth)
-        progress
-      );
+      // Pull up from the road animation
+      // Y position: starts embedded in road (-3), rises up to showcase height (1)
+      modelRef.current.position.y = THREE.MathUtils.lerp(-2.5, 1.5, progress);
       
-      // Subtle tilt on X axis for dynamic feel
-      modelRef.current.rotation.x = THREE.MathUtils.lerp(
-        0.15,  // Slight forward tilt
-        -0.05, // Almost straight
-        progress
-      );
+      // Slight rotation as it lifts
+      modelRef.current.rotation.y = THREE.MathUtils.lerp(0, Math.PI * 0.15, progress);
       
-      // Very subtle Z rotation for polish
-      modelRef.current.rotation.z = THREE.MathUtils.lerp(
-        0.1,
-        -0.05,
-        progress
-      );
+      // Subtle tilt for dynamic feel
+      modelRef.current.rotation.x = THREE.MathUtils.lerp(0.05, -0.02, progress);
+      modelRef.current.rotation.z = THREE.MathUtils.lerp(-0.02, 0.02, progress);
       
-      // Scale up slightly as it comes into view
-      const scale = THREE.MathUtils.lerp(0.9, 1, Math.min(progress * 2, 1));
-      modelRef.current.scale.setScalar(scale * 2.5);
-      
-      // Subtle vertical movement
-      modelRef.current.position.y = THREE.MathUtils.lerp(-0.5, 0, progress);
+      // Scale slightly as it rises
+      const scale = THREE.MathUtils.lerp(2.2, 2.8, progress);
+      modelRef.current.scale.setScalar(scale);
     }
   });
 
   return (
-    <Float
-      speed={1.5}
-      rotationIntensity={0.1}
-      floatIntensity={0.3}
-    >
-      <primitive
-        ref={modelRef}
-        object={clonedScene}
-        scale={2.5}
-        position={[0, 0, 0]}
-      />
-    </Float>
+    <primitive
+      ref={modelRef}
+      object={clonedScene}
+      scale={2.2}
+      position={[0, -2.5, 0]}
+      castShadow
+    />
   );
 }
 
 // Loading placeholder
 function ModelLoader() {
   return (
-    <mesh>
-      <boxGeometry args={[1, 3, 0.1]} />
+    <mesh position={[0, 0, 0]}>
+      <cylinderGeometry args={[0.1, 0.15, 3, 8]} />
       <meshStandardMaterial color="#2997ff" transparent opacity={0.3} />
     </mesh>
   );
 }
 
+// Scene with fog and atmosphere
+function Scene({ scrollProgress }) {
+  const { scene } = useThree();
+  
+  useMemo(() => {
+    scene.fog = new THREE.Fog("#0a0a0a", 8, 25);
+  }, [scene]);
+
+  return (
+    <>
+      {/* Ambient and key lights */}
+      <ambientLight intensity={0.3} />
+      <directionalLight 
+        position={[5, 10, 5]} 
+        intensity={1.2} 
+        castShadow
+        shadow-mapSize={[1024, 1024]}
+      />
+      <directionalLight position={[-5, 5, -5]} intensity={0.4} color="#b4d4ff" />
+      
+      {/* Accent lighting for dramatic effect */}
+      <spotLight
+        position={[0, 8, 3]}
+        angle={0.4}
+        penumbra={1}
+        intensity={0.8}
+        color="#ffffff"
+        castShadow
+      />
+      <pointLight position={[3, 2, 2]} intensity={0.3} color="#2997ff" />
+      <pointLight position={[-3, 2, 2]} intensity={0.3} color="#2997ff" />
+      
+      <Suspense fallback={<ModelLoader />}>
+        <Road scrollProgress={scrollProgress} />
+        <SnowPole scrollProgress={scrollProgress} />
+        <Environment preset="night" />
+      </Suspense>
+    </>
+  );
+}
+
 export default function ModelSection() {
   const sectionRef = useRef();
-  const canvasContainerRef = useRef();
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -111,35 +200,35 @@ export default function ModelSection() {
     [60, 0, 0]
   );
 
-  // Text animations - delayed from model
+  // Text animations - appear after pole rises
   const titleOpacity = useTransform(
     smoothProgress,
-    [0.2, 0.35, 0.8, 0.95],
+    [0.35, 0.5, 0.8, 0.95],
     [0, 1, 1, 0.7]
   );
 
   const titleY = useTransform(
     smoothProgress,
-    [0.2, 0.35],
-    [40, 0]
+    [0.35, 0.5],
+    [50, 0]
   );
 
   const descOpacity = useTransform(
     smoothProgress,
-    [0.28, 0.42, 0.8, 0.95],
+    [0.42, 0.55, 0.8, 0.95],
     [0, 1, 1, 0.7]
   );
 
   const descY = useTransform(
     smoothProgress,
-    [0.28, 0.42],
-    [30, 0]
+    [0.42, 0.55],
+    [40, 0]
   );
 
-  // Scroll progress for 3D - map to 0-1 for rotation
-  const modelRotationProgress = useTransform(
+  // Scroll progress for 3D - map to 0-1 for pull-up animation
+  const modelProgress = useTransform(
     smoothProgress,
-    [0.1, 0.9],
+    [0.1, 0.7],
     [0, 1]
   );
 
@@ -147,7 +236,6 @@ export default function ModelSection() {
     <section ref={sectionRef} className="model-section-3d">
       <div className="model-sticky-container">
         <motion.div
-          ref={canvasContainerRef}
           className="model-canvas-wrapper"
           style={{
             opacity: containerOpacity,
@@ -156,25 +244,12 @@ export default function ModelSection() {
           }}
         >
           <Canvas
-            camera={{ position: [0, 0, 5], fov: 45 }}
+            camera={{ position: [0, 2, 8], fov: 50 }}
             dpr={[1, 2]}
+            shadows
             gl={{ antialias: true, alpha: true }}
           >
-            <ambientLight intensity={0.4} />
-            <directionalLight position={[10, 10, 5]} intensity={1} />
-            <directionalLight position={[-10, -10, -5]} intensity={0.3} color="#2997ff" />
-            <spotLight
-              position={[0, 10, 0]}
-              angle={0.3}
-              penumbra={1}
-              intensity={0.5}
-              color="#ffffff"
-            />
-            
-            <Suspense fallback={<ModelLoader />}>
-              <ScrollLinkedModel scrollProgress={modelRotationProgress} />
-              <Environment preset="city" />
-            </Suspense>
+            <Scene scrollProgress={modelProgress} />
           </Canvas>
           
           {/* Subtle glow behind model */}
