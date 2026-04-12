@@ -1,14 +1,15 @@
 import { useRef, Suspense, useMemo } from "react";
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
-import { Canvas, useFrame, useThree, useLoader } from "@react-three/fiber";
-import { useGLTF, Environment } from "@react-three/drei";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { useGLTF, Environment, Clone } from "@react-three/drei";
 import * as THREE from "three";
+
+const MODEL_URL = "https://xonbkazvfxllffjbqfdm.supabase.co/storage/v1/object/public/models/snowstick1.glb";
 
 // Road plane component
 function Road({ scrollProgress }) {
   const roadRef = useRef();
   
-  // Create road texture pattern
   const roadMaterial = useMemo(() => {
     return new THREE.MeshStandardMaterial({
       color: "#1a1a1a",
@@ -17,7 +18,6 @@ function Road({ scrollProgress }) {
     });
   }, []);
 
-  // Create road markings
   const markingMaterial = useMemo(() => {
     return new THREE.MeshStandardMaterial({
       color: "#ffffff",
@@ -31,7 +31,6 @@ function Road({ scrollProgress }) {
   useFrame(() => {
     if (roadRef.current) {
       const progress = scrollProgress.get();
-      // Slight perspective shift as pole lifts
       roadRef.current.rotation.x = THREE.MathUtils.lerp(-Math.PI / 2.2, -Math.PI / 2.5, progress);
       roadRef.current.position.y = THREE.MathUtils.lerp(-2.5, -3.5, progress);
       roadRef.current.position.z = THREE.MathUtils.lerp(0, -2, progress);
@@ -42,45 +41,59 @@ function Road({ scrollProgress }) {
     <group ref={roadRef} rotation={[-Math.PI / 2.2, 0, 0]} position={[0, -2.5, 0]}>
       {/* Main road surface */}
       <mesh receiveShadow>
-        <planeGeometry args={[12, 30]} />
+        <planeGeometry args={[12, 50]} />
         <primitive object={roadMaterial} attach="material" />
       </mesh>
       
       {/* Center line markings */}
-      {Array.from({ length: 8 }).map((_, i) => (
-        <mesh key={i} position={[0, -12 + i * 3.5, 0.01]}>
-          <planeGeometry args={[0.15, 2]} />
+      {Array.from({ length: 12 }).map((_, i) => (
+        <mesh key={i} position={[0, -22 + i * 4, 0.01]}>
+          <planeGeometry args={[0.15, 2.5]} />
           <primitive object={markingMaterial} attach="material" />
         </mesh>
       ))}
       
       {/* Edge lines */}
       <mesh position={[-5, 0, 0.01]}>
-        <planeGeometry args={[0.1, 30]} />
+        <planeGeometry args={[0.1, 50]} />
         <primitive object={markingMaterial} attach="material" />
       </mesh>
       <mesh position={[5, 0, 0.01]}>
-        <planeGeometry args={[0.1, 30]} />
+        <planeGeometry args={[0.1, 50]} />
         <primitive object={markingMaterial} attach="material" />
       </mesh>
       
       {/* Snow on road edges */}
-      <mesh position={[-6.5, 0, 0.02]}>
-        <planeGeometry args={[3, 30]} />
+      <mesh position={[-7, 0, 0.02]}>
+        <planeGeometry args={[4, 50]} />
         <meshStandardMaterial color="#e8e8e8" roughness={1} />
       </mesh>
-      <mesh position={[6.5, 0, 0.02]}>
-        <planeGeometry args={[3, 30]} />
+      <mesh position={[7, 0, 0.02]}>
+        <planeGeometry args={[4, 50]} />
         <meshStandardMaterial color="#e8e8e8" roughness={1} />
       </mesh>
     </group>
   );
 }
 
-// Snow pole model with pull-up animation
-function SnowPole({ scrollProgress }) {
+// Static snow pole placed along the road
+function StaticSnowPole({ position, rotation = 0, scale = 1.8 }) {
+  const { scene } = useGLTF(MODEL_URL);
+  
+  return (
+    <Clone
+      object={scene}
+      scale={scale}
+      position={position}
+      rotation={[0, rotation, 0]}
+    />
+  );
+}
+
+// Main animated snow pole that rises up
+function RisingSnowPole({ scrollProgress }) {
   const modelRef = useRef();
-  const { scene } = useGLTF("https://xonbkazvfxllffjbqfdm.supabase.co/storage/v1/object/public/models/snowstick1.glb");
+  const { scene } = useGLTF(MODEL_URL);
   const clonedScene = useMemo(() => scene.clone(), [scene]);
   
   useFrame(() => {
@@ -88,7 +101,6 @@ function SnowPole({ scrollProgress }) {
       const progress = scrollProgress.get();
       
       // Pull up from the road animation
-      // Y position: starts embedded in road (-3), rises up to showcase height (1)
       modelRef.current.position.y = THREE.MathUtils.lerp(-2.5, 1.5, progress);
       
       // Slight rotation as it lifts
@@ -99,7 +111,7 @@ function SnowPole({ scrollProgress }) {
       modelRef.current.rotation.z = THREE.MathUtils.lerp(-0.02, 0.02, progress);
       
       // Scale slightly as it rises
-      const scale = THREE.MathUtils.lerp(2.2, 2.8, progress);
+      const scale = THREE.MathUtils.lerp(1.8, 2.8, progress);
       modelRef.current.scale.setScalar(scale);
     }
   });
@@ -108,10 +120,54 @@ function SnowPole({ scrollProgress }) {
     <primitive
       ref={modelRef}
       object={clonedScene}
-      scale={2.2}
+      scale={1.8}
       position={[0, -2.5, 0]}
       castShadow
     />
+  );
+}
+
+// All the poles along the roadside
+function RoadsidePoles() {
+  // Positions for poles on left side of road (negative x)
+  const leftPoles = [
+    { pos: [-5.5, -2.5, -18], rot: 0.1 },
+    { pos: [-5.5, -2.5, -12], rot: -0.05 },
+    { pos: [-5.5, -2.5, -6], rot: 0.08 },
+    { pos: [-5.5, -2.5, 6], rot: -0.1 },
+    { pos: [-5.5, -2.5, 12], rot: 0.05 },
+    { pos: [-5.5, -2.5, 18], rot: -0.08 },
+  ];
+
+  // Positions for poles on right side of road (positive x)
+  const rightPoles = [
+    { pos: [5.5, -2.5, -18], rot: -0.1 },
+    { pos: [5.5, -2.5, -12], rot: 0.05 },
+    { pos: [5.5, -2.5, -6], rot: -0.08 },
+    { pos: [5.5, -2.5, 6], rot: 0.1 },
+    { pos: [5.5, -2.5, 12], rot: -0.05 },
+    { pos: [5.5, -2.5, 18], rot: 0.08 },
+  ];
+
+  return (
+    <group>
+      {leftPoles.map((pole, i) => (
+        <StaticSnowPole
+          key={`left-${i}`}
+          position={pole.pos}
+          rotation={pole.rot}
+          scale={1.6}
+        />
+      ))}
+      {rightPoles.map((pole, i) => (
+        <StaticSnowPole
+          key={`right-${i}`}
+          position={pole.pos}
+          rotation={pole.rot}
+          scale={1.6}
+        />
+      ))}
+    </group>
   );
 }
 
@@ -130,7 +186,7 @@ function Scene({ scrollProgress }) {
   const { scene } = useThree();
   
   useMemo(() => {
-    scene.fog = new THREE.Fog("#0a0a0a", 8, 25);
+    scene.fog = new THREE.Fog("#0a0a0a", 10, 35);
   }, [scene]);
 
   return (
@@ -159,7 +215,8 @@ function Scene({ scrollProgress }) {
       
       <Suspense fallback={<ModelLoader />}>
         <Road scrollProgress={scrollProgress} />
-        <SnowPole scrollProgress={scrollProgress} />
+        <RoadsidePoles />
+        <RisingSnowPole scrollProgress={scrollProgress} />
         <Environment preset="night" />
       </Suspense>
     </>
@@ -244,7 +301,7 @@ export default function ModelSection() {
           }}
         >
           <Canvas
-            camera={{ position: [0, 2, 8], fov: 50 }}
+            camera={{ position: [0, 2, 12], fov: 50 }}
             dpr={[1, 2]}
             shadows
             gl={{ antialias: true, alpha: true }}
@@ -283,4 +340,4 @@ export default function ModelSection() {
 }
 
 // Preload the model
-useGLTF.preload("https://xonbkazvfxllffjbqfdm.supabase.co/storage/v1/object/public/models/snowstick1.glb");
+useGLTF.preload(MODEL_URL);
